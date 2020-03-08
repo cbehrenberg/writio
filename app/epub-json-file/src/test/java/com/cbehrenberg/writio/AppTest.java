@@ -1,4 +1,4 @@
-package com.cbehrenberg.litdyer;
+package com.cbehrenberg.writio;
 
 import static org.junit.Assert.assertTrue;
 

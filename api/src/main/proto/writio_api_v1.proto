@@ -1,0 +1,26 @@
+syntax = "proto3";
+package com.cbehrenberg.writio.api.v1;
+option java_multiple_files = true;
+
+message Book {
+
+	string title = 1;
+	string language = 2;
+
+	repeated Page pages = 3;
+	// page -> chapter(s) -> (heading), sections(s) -> paragraph(s)
+	// page can start with dangling text from previous page (chapter without heading)
+}
+
+message Page {
+	repeated Chapter chapters = 1;
+}
+
+message Chapter {
+	string title = 1;
+	repeated Section sections = 2;
+}
+
+message Section {
+	repeated string paragraphs = 1;
+}
