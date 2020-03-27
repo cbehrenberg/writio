@@ -15,7 +15,7 @@
 	<fileSets>
 	
 		<fileSet>
-			<directory>src\main\proto</directory>
+			<directory>${project.basedir}/src/main/proto</directory>
 			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>*.proto</include>
