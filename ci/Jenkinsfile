@@ -1,0 +1,25 @@
+pipeline {
+	agent {
+		docker {
+			image 'maven:amazoncorretto'
+			args '-v /root/.m2:/root/.m2'
+		}
+	}
+	stages {
+		stage('git-checkout') {
+			steps {
+				git branch: 'initial-jenkins-build', changelog: false, credentialsId: 'github-cbehrenberg', poll: false, url: 'https://github.com/cbehrenberg/writio.git'
+			}
+		}
+		stage('mvn-clean-package') {
+			steps {
+				sh 'mvn clean package'
+			}
+		}
+		stage('mvn-install') {
+			steps {
+				sh 'mvn install'
+			}
+		}
+	}
+}
