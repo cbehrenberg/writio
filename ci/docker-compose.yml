@@ -21,16 +21,16 @@ services:
       - "48081:8080"
       - "50000:50000"
       
-  volumes_filebrowser:
-    image: filebrowser/filebrowser
-    container_name: writio_ci_volumes_filebrowser
+  volumes_filemanager:
+    image: puteulanus/tinyfilemanager
+    user: root
+    container_name: writio_ci_volumes_filemanager
     restart: unless-stopped
     volumes:
-      - nexus_data:/srv/nexus_data
-      - jenkins_data:/srv/jenkins_data
-      - maven_repository:/srv/maven_repository
+      - jenkins_data:/web/jenkins_data
+      - maven_repository:/web/maven_repository
     ports:
-      - 48080:80
+      - 48080:8080
       
   maven_repository_init:
     image: maven:amazoncorretto
