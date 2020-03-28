@@ -1,0 +1,47 @@
+version: "3.7"
+
+services:
+
+  jenkins:
+    depends_on:
+      - maven_repository_init
+    image: jenkinsci/blueocean
+    user: root
+    container_name: writio_ci_jenkins
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: jenkins_data
+        target: /var/jenkins_home
+      - type: volume
+        source: maven_repository
+        target: /root/.m2
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    ports:
+      - "48081:8080"
+      - "50000:50000"
+      
+  volumes_filebrowser:
+    image: filebrowser/filebrowser
+    container_name: writio_ci_volumes_filebrowser
+    restart: unless-stopped
+    volumes:
+      - nexus_data:/srv/nexus_data
+      - jenkins_data:/srv/jenkins_data
+      - maven_repository:/srv/maven_repository
+    ports:
+      - 48080:80
+      
+  maven_repository_init:
+    image: maven:amazoncorretto
+    user: root
+    container_name: writio_ci_maven_repository_init
+    command: ["mvn", "archetype:generate", "-DgroupId=com.writio", "-DartifactId=writio", "-DarchetypeArtifactId=maven-archetype-quickstart", "-DinteractiveMode=false"]
+    volumes:
+      - type: volume
+        source: maven_repository
+        target: /root/.m2
+      
+volumes:
+  jenkins_data:
+  maven_repository:
