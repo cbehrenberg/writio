@@ -1,4 +1,7 @@
 pipeline {
+	parameters {
+		gitParameter branchFilter: 'origin/(.*)', defaultValue: 'dev', name: 'BRANCH', type: 'PT_BRANCH'
+	}
 	agent {
 		docker {
 			image 'maven:amazoncorretto'
@@ -8,7 +11,8 @@ pipeline {
 	stages {
 		stage('git-checkout') {
 			steps {
-				git branch: 'initial-jenkins-build', changelog: false, credentialsId: 'github-cbehrenberg', poll: false, url: 'https://github.com/cbehrenberg/writio.git'
+				echo "checking out git branch '${params.BRANCH}'..."
+				git branch: "${params.BRANCH}", changelog: false, credentialsId: 'github-cbehrenberg', poll: false, url: 'https://github.com/cbehrenberg/writio.git'
 			}
 		}
 		stage('mvn-clean-package') {
