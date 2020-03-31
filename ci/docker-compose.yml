@@ -20,18 +20,24 @@ services:
     ports:
       - "48081:8080"
       - "50000:50000"
-      
-  volumes_filemanager:
-    image: puteulanus/tinyfilemanager
-    user: root
-    container_name: writio_ci_volumes_filemanager
+  
+  filebrowser:
+    build:
+      context: ./docker/filebrowser
+      dockerfile: Dockerfile-filebrowser
+    image: writio/filebrowser:latest
+    container_name: writio_ci_filebrowser
     restart: unless-stopped
     volumes:
-      - jenkins_data:/web/jenkins_data
-      - maven_repository:/web/maven_repository
+      - type: volume
+        source: maven_repository
+        target: /srv/maven
+      - type: volume
+        source: jenkins_data
+        target: /srv/jenkins
     ports:
-      - 48080:8080
-      
+      - 48080:80
+  
   maven_repository_init:
     image: maven:amazoncorretto
     user: root
@@ -41,7 +47,7 @@ services:
       - type: volume
         source: maven_repository
         target: /root/.m2
-      
+  
 volumes:
   jenkins_data:
   maven_repository:
