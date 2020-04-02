@@ -11,7 +11,7 @@ RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/plugins.txt
 
 USER root
 
-RUN apk add --no-cache --update docker py-pip python-dev libffi-dev openssl-dev gcc libc-dev make; \
+RUN apk add --no-cache --update docker py-pip python-dev libffi-dev openssl-dev gcc libc-dev make ca-certificates mailcap bash htop; \
     pip install docker-compose
 
 USER jenkins
