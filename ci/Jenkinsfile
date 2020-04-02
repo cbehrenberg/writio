@@ -4,15 +4,15 @@ pipeline {
 	}
 	agent {
 		docker {
-			image 'maven:amazoncorretto'
-			args '-v /root/.m2:/root/.m2'
+			image 'writio/maven:latest'
+			args '-v /root/.m2/repository:/root/.m2/repository'
 		}
 	}
 	stages {
 		stage('git-checkout') {
 			steps {
 				echo "checking out git branch '${params.BRANCH}'..."
-				git branch: "${params.BRANCH}", changelog: false, credentialsId: 'github-cbehrenberg', poll: false, url: 'https://github.com/cbehrenberg/writio.git'
+				git branch: "${params.BRANCH}", changelog: false, poll: false, url: 'https://github.com/cbehrenberg/writio.git'
 			}
 		}
 		stage('mvn-clean-package') {

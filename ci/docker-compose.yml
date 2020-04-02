@@ -5,18 +5,26 @@ services:
   jenkins:
     depends_on:
       - maven_repository_init
-    image: jenkinsci/blueocean
-    user: root
+    build:
+      context: ./docker/jenkins
+      dockerfile: Dockerfile
+    image: writio/jenkins:latest
     container_name: writio_ci_jenkins
     restart: unless-stopped
+    user: root
     volumes:
+      - type: bind
+        source: ./jobs
+        target: /var/jenkins_home/jobs
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    #  - type: volume
+    #    source: jenkins_data
+    #    target: /var/jenkins_home
       - type: volume
-        source: jenkins_data
-        target: /var/jenkins_home
-      - type: volume
-        source: maven_repository
-        target: /root/.m2
-      - "/var/run/docker.sock:/var/run/docker.sock"
+        source: maven_data
+        target: /root
     ports:
       - "48081:8080"
       - "50000:50000"
@@ -24,13 +32,13 @@ services:
   filebrowser:
     build:
       context: ./docker/filebrowser
-      dockerfile: Dockerfile-filebrowser
+      dockerfile: Dockerfile
     image: writio/filebrowser:latest
     container_name: writio_ci_filebrowser
     restart: unless-stopped
     volumes:
       - type: volume
-        source: maven_repository
+        source: maven_data
         target: /srv/maven
       - type: volume
         source: jenkins_data
@@ -39,15 +47,16 @@ services:
       - 48080:80
   
   maven_repository_init:
-    image: maven:amazoncorretto
-    user: root
-    container_name: writio_ci_maven_repository_init
-    command: ["mvn", "archetype:generate", "-DgroupId=com.writio", "-DartifactId=writio", "-DarchetypeArtifactId=maven-archetype-quickstart", "-DinteractiveMode=false"]
+    build:
+      context: ./docker/maven
+      dockerfile: Dockerfile
+    image: writio/maven:latest
     volumes:
       - type: volume
-        source: maven_repository
-        target: /root/.m2
+        source: maven_data
+        target: /volume
+    command: ["cp", "-r", "/root/.m2", "/volume"]
   
 volumes:
   jenkins_data:
-  maven_repository:
+  maven_data:
