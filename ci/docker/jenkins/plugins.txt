@@ -4,14 +4,6 @@ data-tables-api
 display-url-api
 docker-commons
 docker-workflow
-dtkit-api
-durable-task
-echarts-api
-envinject
-envinject-api
-external-monitor-job
-favorite
-font-awesome-api
 git
 git-client
 git-parameter
