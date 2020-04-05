@@ -5,7 +5,7 @@ pipeline {
 	agent {
 		docker {
 			image "writio/maven:latest"
-			args "-v /usr/share/maven/ref/repository:/usr/share/maven/ref/repository"
+			args "-v /usr/share/maven/ref/repository:/abc123"
 		}
 	}
 	stages {
