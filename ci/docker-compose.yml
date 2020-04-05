@@ -3,8 +3,6 @@ version: "3.7"
 services:
 
   jenkins:
-    depends_on:
-      - maven_repository_init
     build:
       context: ./docker/jenkins
       dockerfile: Dockerfile
@@ -19,12 +17,9 @@ services:
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
-    #  - type: volume
-    #    source: jenkins_data
-    #    target: /var/jenkins_home
       - type: volume
-        source: maven_data
-        target: /root
+        source: maven_repository
+        target: /usr/share/maven/ref/repository
     ports:
       - "48081:8080"
       - "50000:50000"
@@ -38,25 +33,14 @@ services:
     restart: unless-stopped
     volumes:
       - type: volume
-        source: maven_data
-        target: /srv/maven
+        source: maven_repository
+        target: /srv/maven_repository
       - type: volume
         source: jenkins_data
         target: /srv/jenkins
     ports:
       - 48080:80
   
-  maven_repository_init:
-    build:
-      context: ./docker/maven
-      dockerfile: Dockerfile
-    image: writio/maven:latest
-    volumes:
-      - type: volume
-        source: maven_data
-        target: /volume
-    command: ["cp", "-r", "/root/.m2", "/volume"]
-  
 volumes:
   jenkins_data:
-  maven_data:
+  maven_repository:
