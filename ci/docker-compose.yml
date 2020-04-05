@@ -4,6 +4,8 @@ services:
 
   # jenkins ci
   jenkins:
+    depends_on:
+      - maven
     build:
       context: ./docker/jenkins
       dockerfile: Dockerfile
