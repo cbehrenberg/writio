@@ -2,6 +2,9 @@ pipeline {
 	parameters {
 		gitParameter branchFilter: 'origin/(.*)', defaultValue: 'dev', name: 'BRANCH', type: 'PT_BRANCH'
 	}
+	environment {
+		MAVEN_REPO_LOCAL_PATH = "/usr/share/maven/ref/repository"
+	}
 	agent {
 		docker {
 			image "writio/maven:latest"
