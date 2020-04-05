@@ -18,12 +18,12 @@ pipeline {
 		stage('mvn-clean-package') {
 			steps {
 				sh "mvn help:evaluate -Dexpression=settings.localRepository"
-				sh "mvn clean package"
+				sh "mvn clean package -Dmaven.repo.local=/abc123"
 			}
 		}
 		stage('mvn-install') {
 			steps {
-				sh 'mvn install'
+				sh 'mvn install -Dmaven.repo.local=/abc123'
 			}
 		}
 	}
