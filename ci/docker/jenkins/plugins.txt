@@ -20,13 +20,7 @@ git-server
 github-api
 github-branch-source
 	gitlab-plugin
-jenkins-design-language
-locale
-localization-support
-localization-zh-cn
-mapdb-api
-matrix-project
-parameterized-trigger
+	parameterized-trigger
 pipeline-build-step
 pipeline-github-lib
 pipeline-graph-analysis
