@@ -5,7 +5,7 @@ pipeline {
 	agent {
 		docker {
 			image "writio/maven:latest"
-			args "-v /maven_repository:/maven_repository"
+			args "-v writio_ci_maven_repository:/maven_repository"
 			reuseNode true
 		}
 	}
