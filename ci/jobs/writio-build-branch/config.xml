@@ -14,6 +14,15 @@
   <description>build writio branch</description>
   <keepDependencies>false</keepDependencies>
   <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>1</daysToKeep>
+        <numToKeep>1</numToKeep>
+        <artifactDaysToKeep>1</artifactDaysToKeep>
+        <artifactNumToKeep>1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
     <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.29.5">
       <projectUrl>https://github.com/cbehrenberg/writio.git/</projectUrl>
       <displayName>writio</displayName>
@@ -23,7 +32,7 @@
     </com.dabsquared.gitlabjenkins.connection.GitLabConnectionProperty>
     <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.31">
       <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
+      <rebuildDisabled>true</rebuildDisabled>
     </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.plugins.throttleconcurrents.ThrottleJobProperty plugin="throttle-concurrents@2.0.2">
       <maxConcurrentPerNode>0</maxConcurrentPerNode>
@@ -33,13 +42,12 @@
       <throttleOption>project</throttleOption>
       <limitOneJobWithMatchingParams>false</limitOneJobWithMatchingParams>
       <paramsToUseForLimit></paramsToUseForLimit>
-      <configVersion>1</configVersion>
     </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <net.uaznia.lukanus.hudson.plugins.gitparameter.GitParameterDefinition plugin="git-parameter@0.9.12">
           <name>BRANCH</name>
-          <uuid>d6d9202c-1050-4747-b594-09b6a8e96aa8</uuid>
+          <uuid>fc41ba28-0479-4660-aeef-28c43cdcace7</uuid>
           <type>PT_BRANCH</type>
           <tagFilter>*</tagFilter>
           <branchFilter>origin/(.*)</branchFilter>
@@ -55,7 +63,6 @@
       <userRemoteConfigs>
         <hudson.plugins.git.UserRemoteConfig>
           <url>https://github.com/cbehrenberg/writio.git</url>
-          <credentialsId>github</credentialsId>
         </hudson.plugins.git.UserRemoteConfig>
       </userRemoteConfigs>
       <branches>
