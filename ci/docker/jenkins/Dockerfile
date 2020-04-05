@@ -1,4 +1,11 @@
+FROM maven:amazoncorretto as maven
+
+# initialize repo
+RUN mvn archetype:generate -DgroupId=com.writio -DartifactId=writio -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+
+
 FROM jenkins/jenkins:lts-alpine	
+COPY --from=maven /root/.m2 /root/.m2
 
 ENV JENKINS_USER admin
 ENV JENKINS_PASS admin
