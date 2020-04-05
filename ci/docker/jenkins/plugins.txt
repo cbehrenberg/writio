@@ -1,23 +1,14 @@
+plugin-usage-plugin
 analysis-model-api
-antisamy-markup-formatter
 apache-httpcomponents-client-4-api
 bootstrap4-api
 bouncycastle-api
 branch-api
-build-name-setter
-build-timeout
 built-on-column
-clearcase
-cloudbees-folder
-cobertura
-code-coverage-api
 command-launcher
 conditional-buildstep
-config-file-provider
-copyartifact
 credentials
 credentials-binding
-cvs
 dashboard-view
 data-tables-api
 display-url-api
@@ -26,27 +17,23 @@ docker-workflow
 dtkit-api
 durable-task
 echarts-api
-embeddable-build-status
 envinject
 envinject-api
 external-monitor-job
 favorite
 font-awesome-api
-forensics-api
 git
 git-client
 git-parameter
 git-server
-github
+	github
 github-api
 github-branch-source
-gitlab-plugin
+	gitlab-plugin
 jenkins-design-language
-jenkins-multijob-plugin
 locale
 localization-support
 localization-zh-cn
-lockable-resources
 mapdb-api
 matrix-project
 parameterized-trigger
@@ -65,15 +52,11 @@ pipeline-stage-tags-metadata
 pipeline-stage-view
 plain-credentials
 plugin-util-api
-rebuild
-repo
+	rebuild
 run-condition
 scm-api
 structs
-tfs
-throttle-concurrents
-timestamper
-token-macro
+	throttle-concurrents
 workflow-aggregator
 workflow-api
 workflow-basic-steps
