@@ -43,9 +43,6 @@ pipeline-stage-view
 plain-credentials
 plugin-util-api
 	rebuild
-run-condition
-scm-api
-structs
 	throttle-concurrents
 workflow-aggregator
 workflow-api
