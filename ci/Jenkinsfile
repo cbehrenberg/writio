@@ -4,7 +4,7 @@ pipeline {
 	}
 	agent {
 		docker {
-			image "writio/maven:latest"
+			image "maven:amazoncorretto"
 			args "-v writio_ci_maven_repository:/root/.m2/repository"
 			reuseNode true
 		}

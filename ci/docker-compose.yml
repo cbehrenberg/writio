@@ -4,8 +4,6 @@ services:
 
   # jenkins ci
   jenkins:
-    depends_on:
-      - maven
     build:
       context: ./docker/jenkins
       dockerfile: Dockerfile
@@ -40,14 +38,6 @@ services:
         target: /srv/maven_repository
     ports:
       - "${LOCAL_FILEBROWSER_PORT}:80"
-
-  # dummy service to build the image
-  maven:
-    build:
-      context: ./docker/maven
-      dockerfile: Dockerfile
-    image: writio/maven:latest
-    container_name: "${COMPOSE_PROJECT_NAME}_maven"
-  
+ 
 volumes:
   maven_repository:
