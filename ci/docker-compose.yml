@@ -40,6 +40,13 @@ services:
         target: /srv/jenkins
     ports:
       - 48080:80
+
+  maven:
+    build:
+      context: ./docker/maven
+      dockerfile: Dockerfile
+    image: writio/maven:latest
+    container_name: writio_ci_maven
   
 volumes:
   jenkins_data:

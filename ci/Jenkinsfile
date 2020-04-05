@@ -6,6 +6,7 @@ pipeline {
 		docker {
 			image "writio/maven:latest"
 			args "-v /maven_repository:/maven_repository"
+			reuseNode true
 		}
 	}
 	stages {
@@ -15,14 +16,9 @@ pipeline {
 				git branch: "${params.BRANCH}", changelog: false, poll: false, url: 'https://github.com/cbehrenberg/writio.git'
 			}
 		}
-		stage('mvn-clean-package') {
+		stage('mvn-clean-install') {
 			steps {
-				sh "mvn clean package -Dmaven.repo.local=/maven_repository"
-			}
-		}
-		stage('mvn-install') {
-			steps {
-				sh 'mvn install -Dmaven.repo.local=/maven_repository'
+				sh "mvn clean install -Dmaven.repo.local=/maven_repository -X"
 			}
 		}
 	}
