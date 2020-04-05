@@ -13,10 +13,7 @@ USER root
 RUN apk add --no-cache --update docker py-pip python-dev libffi-dev openssl-dev gcc libc-dev make ca-certificates mailcap bash htop; \
     pip install docker-compose
 
-# local maven repo in layer
-ARG MAVEN_REPO_LOCAL_PATH=/usr/share/maven/ref/repository
-ENV MAVEN_REPO_LOCAL $MAVEN_REPO_LOCAL_PATH
-RUN mkdir -p $MAVEN_REPO_LOCAL_PATH; \
-    chown jenkins: $MAVEN_REPO_LOCAL_PATH
+VOLUME /maven_repository
+ENV MAVEN_REPO_LOCAL /maven_repository
 
 USER jenkins

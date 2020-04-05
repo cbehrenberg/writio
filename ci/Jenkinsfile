@@ -5,7 +5,7 @@ pipeline {
 	agent {
 		docker {
 			image "writio/maven:latest"
-			args "-v /usr/share/maven/ref/repository:/abc123"
+			args "-v /maven_repository:/maven_repository"
 		}
 	}
 	stages {
@@ -17,13 +17,12 @@ pipeline {
 		}
 		stage('mvn-clean-package') {
 			steps {
-				sh "mvn help:evaluate -Dexpression=settings.localRepository"
-				sh "mvn clean package -Dmaven.repo.local=/abc123"
+				sh "mvn clean package -Dmaven.repo.local=/maven_repository"
 			}
 		}
 		stage('mvn-install') {
 			steps {
-				sh 'mvn install -Dmaven.repo.local=/abc123'
+				sh 'mvn install -Dmaven.repo.local=/maven_repository'
 			}
 		}
 	}

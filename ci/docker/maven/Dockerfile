@@ -1,7 +1,7 @@
 FROM maven:amazoncorretto
 
-# initialize repo
-RUN mvn archetype:generate -DgroupId=com.writio -DartifactId=writio -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+VOLUME /maven_repository
+ENV MAVEN_REPO_LOCAL /maven_repository
 
 ENTRYPOINT ["/usr/local/bin/mvn-entrypoint.sh"]
 CMD ["mvn"]

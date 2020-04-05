@@ -19,7 +19,7 @@ services:
         target: /var/run/docker.sock
       - type: volume
         source: maven_repository
-        target: /usr/share/maven/ref/repository
+        target: /maven_repository
     ports:
       - "48081:8080"
       - "50000:50000"
