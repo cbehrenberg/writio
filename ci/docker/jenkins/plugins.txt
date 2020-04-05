@@ -1,13 +1,3 @@
-plugin-usage-plugin
-analysis-model-api
-apache-httpcomponents-client-4-api
-bootstrap4-api
-bouncycastle-api
-branch-api
-built-on-column
-command-launcher
-conditional-buildstep
-credentials
 credentials-binding
 dashboard-view
 data-tables-api
