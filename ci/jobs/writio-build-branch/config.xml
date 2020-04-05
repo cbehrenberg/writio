@@ -39,7 +39,7 @@
       <parameterDefinitions>
         <net.uaznia.lukanus.hudson.plugins.gitparameter.GitParameterDefinition plugin="git-parameter@0.9.12">
           <name>BRANCH</name>
-          <uuid>150890e3-7f25-436f-8765-97b38a7030cf</uuid>
+          <uuid>d6d9202c-1050-4747-b594-09b6a8e96aa8</uuid>
           <type>PT_BRANCH</type>
           <tagFilter>*</tagFilter>
           <branchFilter>origin/(.*)</branchFilter>
