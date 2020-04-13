@@ -4,7 +4,7 @@ def defaultBranch = 'dev'
 
 pipelineJob(jobName) {
 
-    description("<p>Builds a writio branch from remote GitHub repository '${repositoryUrl}'.</p><p>When executed the first time, the ${defaultBranch}-branch will be built (default). Afterwards, you can select from a combo box all available other branches.</p>")
+    description("Builds a writio branch from remote GitHub repository '${repositoryUrl}'. When executed the first time, the ${defaultBranch}-branch will be built (default). Afterwards, you can select from a combo box all available other branches.")
 
     properties {
 
@@ -31,7 +31,7 @@ pipelineJob(jobName) {
                 git {
                 
                     remote {
-                        url(repo)
+                        url(repositoryUrl)
                     }
                 
                     branch "*/${defaultBranch}"
