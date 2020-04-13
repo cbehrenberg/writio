@@ -1,0 +1,46 @@
+version: "3.7"
+
+services:
+
+  # jenkins ci
+  jenkins:
+    build:
+      context: ./docker/jenkins
+      dockerfile: Dockerfile
+    image: writio/jenkins:latest
+    container_name: "${COMPOSE_PROJECT_NAME}_jenkins"
+    restart: unless-stopped
+    user: root
+    environment:
+      - "MAVEN_VOLUME=${COMPOSE_PROJECT_NAME}_maven_repository"
+    volumes:
+      - type: bind
+        source: "./jenkins.yaml"
+        target: "/usr/share/jenkins/ref/jenkins.yaml"
+      - type: bind
+        source: "./jobs"
+        target: "/usr/share/jenkins/ref/jobs"
+      - type: bind
+        source: "${LOCAL_CONTAINER_ENGINE_SOCKET}"
+        target: "/var/run/docker.sock"
+    ports:
+      - "${LOCAL_JENKINS_PORT}:8080"
+      - "50000:50000"
+
+  # file manager for volumes
+  filebrowser:
+    build:
+      context: ./docker/filebrowser
+      dockerfile: Dockerfile
+    image: writio/filebrowser:latest
+    container_name: "${COMPOSE_PROJECT_NAME}_filebrowser"
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: maven_repository
+        target: /srv/maven_repository
+    ports:
+      - "${LOCAL_FILEBROWSER_PORT}:80"
+ 
+volumes:
+  maven_repository:
