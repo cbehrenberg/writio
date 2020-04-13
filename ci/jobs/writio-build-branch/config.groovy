@@ -1,12 +1,14 @@
-pipelineJob('writio-build-branch') {
+def repositoryUrl = 'https://github.com/cbehrenberg/writio.git'
+def jobName = 'writio-build-branch'
+def defaultBranch = 'dev'
 
-    def repo = 'https://github.com/cbehrenberg/writio.git'
+pipelineJob(jobName) {
 
-    description("<p>Builds a writio branch from remote GitHub repository.</p><p>When executed the first time, the dev branch will be built (default). Afterwards, you can select from a combo box all available other branches.</p>")
+    description("<p>Builds a writio branch from remote GitHub repository '${repositoryUrl}'.</p><p>When executed the first time, the ${defaultBranch}-branch will be built (default). Afterwards, you can select from a combo box all available other branches.</p>")
 
     properties {
 
-        githubProjectUrl(repo)
+        githubProjectUrl(repositoryUrl)
         
         rebuild {
             autoRebuild(false) 
@@ -23,7 +25,7 @@ pipelineJob('writio-build-branch') {
     definition {
         cpsScm {
 
-            scriptPath 'ci/jobs/writio-build-branch/Jenkinsfile'
+            scriptPath "ci/jobs/${jobName}/Jenkinsfile"
 
             scm {
                 git {
@@ -32,7 +34,7 @@ pipelineJob('writio-build-branch') {
                         url(repo)
                     }
                 
-                    branch '*/dev'
+                    branch "*/${defaultBranch}"
                     lightweight(true)
 
                     extensions {}
@@ -40,4 +42,9 @@ pipelineJob('writio-build-branch') {
             }
         }
     }
+}
+
+// execute immediately when fresh to initialize parameters
+if (!jenkins.model.Jenkins.instance.getItemByFullName(jobName)) {
+    queue(jobName)
 }
