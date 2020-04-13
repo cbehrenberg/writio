@@ -15,15 +15,18 @@ services:
       - "MAVEN_VOLUME=${COMPOSE_PROJECT_NAME}_maven_repository"
     volumes:
       - type: bind
-        source: "${LOCAL_JENKINS_JOBS_PATH}"
-        target: /var/jenkins_home/jobs
+        source: "./jenkins.yaml"
+        target: "/usr/share/jenkins/ref/jenkins.yaml"
+      - type: bind
+        source: "./jobs"
+        target: "/usr/share/jenkins/ref/jobs"
       - type: bind
         source: "${LOCAL_CONTAINER_ENGINE_SOCKET}"
-        target: /var/run/docker.sock
+        target: "/var/run/docker.sock"
     ports:
       - "${LOCAL_JENKINS_PORT}:8080"
       - "50000:50000"
-  
+
   # file manager for volumes
   filebrowser:
     build:

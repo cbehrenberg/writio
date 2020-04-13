@@ -25,3 +25,6 @@ git-parameter
 git-server
 github-api
 github-branch-source
+workflow-aggregator
+configuration-as-code
+job-dsl
