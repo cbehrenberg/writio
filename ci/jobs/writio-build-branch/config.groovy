@@ -2,11 +2,11 @@ pipelineJob('writio-build-branch') {
 
     def repo = 'https://github.com/cbehrenberg/writio.git'
 
-    description("writio job for building a GitHub branch by cloning from remote")
+    description("<p>Builds a writio branch from remote GitHub repository.</p><p>When executed the first time, the dev branch will be built (default). Afterwards, you can select from a combo box all available other branches.</p>")
 
     properties {
 
-        githubProjectUrl (repo) 
+        githubProjectUrl(repo)
         
         rebuild {
             autoRebuild(false) 
@@ -23,7 +23,7 @@ pipelineJob('writio-build-branch') {
     definition {
         cpsScm {
 
-            scriptPath 'ci/Jenkinsfile'
+            scriptPath 'ci/jobs/writio-build-branch/Jenkinsfile'
 
             scm {
                 git {
@@ -32,7 +32,7 @@ pipelineJob('writio-build-branch') {
                         url(repo)
                     }
                 
-                    branch '*/initial-jenkins-build'
+                    branch '*/dev'
                     lightweight(true)
 
                     extensions {}
