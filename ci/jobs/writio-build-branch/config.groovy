@@ -44,7 +44,4 @@ pipelineJob(jobName) {
     }
 }
 
-// execute immediately when fresh to initialize parameters
-if (!jenkins.model.Jenkins.instance.getItemByFullName(jobName)) {
-    queue(jobName)
-}
+queue(jobName)
