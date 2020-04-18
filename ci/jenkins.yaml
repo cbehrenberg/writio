@@ -7,3 +7,4 @@ tool:
       name: "Default"
 jobs:
   - file: "${REF}/jobs/writio-build-branch/config.groovy"
+  - file: "${REF}/jobs/writio-build-local/config.groovy"
