@@ -28,9 +28,9 @@ pipelineJob(jobName) {
 
                 filesystem {
 
-                    path("/scm")
+                    path("/var/jenkins_home/jobs/writio-build-local/workspace")
 
-                    clearWorkspace(true)
+                    clearWorkspace(false)
                     copyHidden(true)
 
                     filterSettings {

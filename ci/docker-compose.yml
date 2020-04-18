@@ -25,7 +25,7 @@ services:
         target: "/var/run/docker.sock"
       - type: bind
         source: "./.."
-        target: "/scm"
+        target: "/var/jenkins_home/jobs/writio-build-local/workspace"
     ports:
       - "${LOCAL_JENKINS_PORT}:8080"
       - "50000:50000"
