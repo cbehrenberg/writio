@@ -13,6 +13,8 @@
   <groupId>com.cbehrenberg.writio.ci.docker</groupId>
   <artifactId>jenkins</artifactId>
 
+  <name>writio ci docker: jenkins</name>
+
   <packaging>pom</packaging>
 
   <build>

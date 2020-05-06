@@ -13,6 +13,8 @@
   <groupId>com.cbehrenberg.writio.ci.docker</groupId>
   <artifactId>filebrowser</artifactId>
 
+  <name>writio ci docker: filebrowser</name>
+
   <packaging>pom</packaging>
 
   <build>

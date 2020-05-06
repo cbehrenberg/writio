@@ -12,6 +12,8 @@
 	</parent>
 
 	<artifactId>ci</artifactId>
+	<name>writio ci</name>
+
 	<packaging>pom</packaging>
 
 	<modules>

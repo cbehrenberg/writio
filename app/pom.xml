@@ -12,6 +12,9 @@
 	</parent>
 
 	<artifactId>writio-app</artifactId>
+
+	<name>writio app</name>
+
 	<packaging>pom</packaging>
 
 	<modules>

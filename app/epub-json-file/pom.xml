@@ -12,6 +12,9 @@
 	</parent>
 
 	<artifactId>epub-json-file</artifactId>
+
+	<name>writio app: epub json file</name>
+
 	<packaging>jar</packaging>
 
 	<build>
