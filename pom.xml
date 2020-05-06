@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -14,10 +13,12 @@
 	<modules>
 		<module>api</module>
 		<module>app</module>
+		<module>ci</module>
 	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<container.image.repository>cbehrenberg/writio</container.image.repository>
 	</properties>
 
 	<dependencies>
@@ -122,6 +123,66 @@
 	</dependencyManagement>
 
 	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>parse-version</id>
+						<goals>
+							<goal>parse-version</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.gmavenplus</groupId>
+				<artifactId>gmavenplus-plugin</artifactId>
+				<version>1.9.0</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-all</artifactId>
+						<version>3.0.3</version>
+						<type>pom</type>
+						<scope>runtime</scope>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>add-dynamic-properties</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<scripts>
+								<!-- defines container image tags and if the images should be pushed or not -->
+								<!-- only releases will be pushed -->
+								<script>
+									<![CDATA[
+										versionQualifier = "${parsedVersion.qualifier}"
+
+										isSnapshot = (versionQualifier == "SNAPSHOT")
+										isRelease = (versionQualifier == "")
+										tagLatestSkip = !isSnapshot && !isRelease
+										pushSkip = !isRelease
+										tagLatest = isSnapshot ? "latest-snapshot" : (isRelease ? "latest" : "")
+
+										project.properties.setProperty('container.tag.latest.skip', "${tagLatestSkip}")
+										project.properties.setProperty('container.push.skip', "${pushSkip}")
+										project.properties.setProperty('container.tag.latest', "${tagLatest}")
+										project.properties.setProperty('container.tag.version', "${project.version}")
+									]]>
+								</script>
+							</scripts>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 
 		<pluginManagement>
 			<plugins>
@@ -169,6 +230,9 @@
 				<plugin>
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>2.8.2</version>
+					<configuration>
+						<skip>true</skip>
+					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
@@ -216,6 +280,15 @@
 							</configuration>
 						</execution>
 					</executions>
+				</plugin>
+				<plugin>
+					<groupId>com.spotify</groupId>
+					<artifactId>dockerfile-maven-plugin</artifactId>
+					<version>1.4.13</version>
+					<configuration>
+						<repository>${container.image.repository}</repository>
+						<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
