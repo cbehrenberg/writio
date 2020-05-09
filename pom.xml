@@ -167,11 +167,9 @@
 										isRelease = (versionQualifier == "")
 										tagLatestSkip = !isSnapshot && !isRelease
 										pushSkip = !isRelease
-										tagLatest = isSnapshot ? "latest-snapshot" : (isRelease ? "latest" : "")
 
 										project.properties.setProperty('container.tag.latest.skip', "${tagLatestSkip}")
 										project.properties.setProperty('container.push.skip', "${pushSkip}")
-										project.properties.setProperty('container.tag.latest', "${tagLatest}")
 										project.properties.setProperty('container.tag.version', "${project.version}")
 									]]>
 								</script>

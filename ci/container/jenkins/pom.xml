@@ -35,7 +35,7 @@
               <goal>tag</goal>
             </goals>
             <configuration>
-              <tag>${container.tag.latest}</tag>
+              <tag>latest</tag>
               <skip>${container.tag.latest.skip}</skip>
             </configuration>
           </execution>
@@ -46,7 +46,7 @@
               <goal>push</goal>
             </goals>
             <configuration>
-              <tag>${container.tag.latest}</tag>
+              <tag>latest</tag>
               <skip>${container.push.skip}</skip>
             </configuration>
           </execution>
