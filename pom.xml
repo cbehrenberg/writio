@@ -18,7 +18,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<container.image.repository>cbehrenberg/writio</container.image.repository>
 	</properties>
 
 	<dependencies>
@@ -140,7 +139,6 @@
 			<plugin>
 				<groupId>org.codehaus.gmavenplus</groupId>
 				<artifactId>gmavenplus-plugin</artifactId>
-				<version>1.9.0</version>
 				<dependencies>
 					<dependency>
 						<groupId>org.codehaus.groovy</groupId>
@@ -175,6 +173,24 @@
 										project.properties.setProperty('container.push.skip', "${pushSkip}")
 										project.properties.setProperty('container.tag.latest', "${tagLatest}")
 										project.properties.setProperty('container.tag.version', "${project.version}")
+									]]>
+								</script>
+							</scripts>
+						</configuration>
+					</execution>
+					<execution>
+						<id>deploy-assertion</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<scripts>
+								<script>
+									<![CDATA[
+										if ("${container.push.skip}" == "true") {
+											throw new RuntimeException("deploy not allowed for version ${project.version}");
+										}
 									]]>
 								</script>
 							</scripts>
@@ -226,6 +242,11 @@
 				<plugin>
 					<artifactId>maven-install-plugin</artifactId>
 					<version>2.5.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.gmavenplus</groupId>
+					<artifactId>gmavenplus-plugin</artifactId>
+					<version>1.9.0</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-deploy-plugin</artifactId>
@@ -286,7 +307,6 @@
 					<artifactId>dockerfile-maven-plugin</artifactId>
 					<version>1.4.13</version>
 					<configuration>
-						<repository>${container.image.repository}</repository>
 						<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
 					</configuration>
 				</plugin>

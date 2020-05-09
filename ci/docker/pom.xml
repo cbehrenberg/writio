@@ -12,9 +12,9 @@
 	</parent>
 
 	<groupId>com.cbehrenberg.writio.ci</groupId>
-	<artifactId>docker</artifactId>
+	<artifactId>container</artifactId>
 
-	<name>writio ci docker</name>
+	<name>writio ci container</name>
 
 	<packaging>pom</packaging>
 

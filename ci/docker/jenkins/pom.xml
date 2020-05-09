@@ -6,14 +6,14 @@
 
   <parent>
     <groupId>com.cbehrenberg.writio.ci</groupId>
-    <artifactId>docker</artifactId>
+    <artifactId>container</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>com.cbehrenberg.writio.ci.docker</groupId>
+  <groupId>com.cbehrenberg.writio.ci.container</groupId>
   <artifactId>jenkins</artifactId>
 
-  <name>writio ci docker: jenkins</name>
+  <name>writio ci container: jenkins</name>
 
   <packaging>pom</packaging>
 
@@ -23,6 +23,9 @@
       <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>dockerfile-maven-plugin</artifactId>
+        <configuration>
+          <repository>writio/${project.artifactId}</repository>
+        </configuration>
         <executions>
 
           <execution>
@@ -32,7 +35,7 @@
               <goal>tag</goal>
             </goals>
             <configuration>
-              <tag>${project.artifactId}-${container.tag.latest}</tag>
+              <tag>${container.tag.latest}</tag>
               <skip>${container.tag.latest.skip}</skip>
             </configuration>
           </execution>
@@ -43,7 +46,7 @@
               <goal>push</goal>
             </goals>
             <configuration>
-              <tag>${project.artifactId}-${container.tag.latest}</tag>
+              <tag>${container.tag.latest}</tag>
               <skip>${container.push.skip}</skip>
             </configuration>
           </execution>
@@ -55,7 +58,7 @@
               <goal>tag</goal>
             </goals>
             <configuration>
-              <tag>${project.artifactId}-${container.tag.version}</tag>
+              <tag>${container.tag.version}</tag>
             </configuration>
           </execution>
 
@@ -65,13 +68,12 @@
               <goal>tag</goal>
             </goals>
             <configuration>
-              <tag>${project.artifactId}-${container.tag.version}</tag>
+              <tag>${container.tag.version}</tag>
               <skip>${container.push.skip}</skip>
             </configuration>
           </execution>
 
         </executions>
-
       </plugin>
 
     </plugins>
