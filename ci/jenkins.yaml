@@ -8,4 +8,4 @@ tool:
 jobs:
   - file: "${REF}/jobs/writio-build-branch/config.groovy"
   - file: "${REF}/jobs/writio-build-local/config.groovy"
-  - file: "${REF}/jobs/writio-release-local/config.groovy"
+  - file: "${REF}/jobs/writio-release-branch/config.groovy"

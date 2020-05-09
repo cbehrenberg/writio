@@ -23,9 +23,6 @@ services:
       - type: bind
         source: "./.."
         target: "/var/jenkins_home/jobs/writio-build-local/workspace"
-      - type: bind
-        source: "./.."
-        target: "/var/jenkins_home/jobs/writio-release-local/workspace"
     ports:
       - "${LOCAL_JENKINS_PORT}:8080"
       - "50000:50000"

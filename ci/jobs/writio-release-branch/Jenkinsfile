@@ -1,0 +1,47 @@
+pipeline {
+	agent {
+		docker {
+			image "maven:amazoncorretto"
+			args "-v writio_ci_maven_repository:/root/.m2/repository"
+			reuseNode true
+		}
+	}
+	parameters {
+		gitParameter branchFilter: 'origin/(.*)', defaultValue: 'dev', name: 'from_branch', type: 'PT_BRANCH', description: 'writio branch to release from')
+		string(name: 'release_version', description: 'Release Version.')
+		booleanParam(name: 'deploy_latest', defaultValue: true, description: 'Deploys as latest version, if checked.')
+		booleanParam(name: 'initialize_parameters', defaultValue: false, description: 'If true, it only reloads parameters from Jenkinsfile.')
+    }
+	stages {
+		stage('initialize-parameters') {
+			steps {
+				echo "initialize-parameters"
+			}
+		}
+		stage('create-release-branch') {
+			steps {
+				echo "create-release-branch"
+			}
+		}
+		stage('prepare-sources') {
+			steps {
+				echo "prepare-sources"
+			}
+		}
+		stage('mvn-clean-install') {
+			steps {
+				echo "mvn-clean-install"
+			}
+		}
+		stage('mvn-deploy') {
+			steps {
+				echo "mvn-deploy"
+			}
+		}
+		stage('create-tag') {
+			steps {
+				echo "create-tag"
+			}
+		}
+	}
+}
