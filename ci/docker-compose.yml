@@ -4,7 +4,7 @@ services:
 
   # jenkins ci
   jenkins:
-    image: cbehrenberg/writio:jenkins-${WRITIO_VERSION}
+    image: writio/jenkins:${WRITIO_VERSION}
     container_name: "${COMPOSE_PROJECT_NAME}_jenkins"
     restart: unless-stopped
     user: root
@@ -29,7 +29,7 @@ services:
 
   # file manager for volumes
   filebrowser:
-    image: cbehrenberg/writio:filebrowser-${WRITIO_VERSION}
+    image: writio/filebrowser:${WRITIO_VERSION}
     container_name: "${COMPOSE_PROJECT_NAME}_filebrowser"
     restart: unless-stopped
     volumes:
