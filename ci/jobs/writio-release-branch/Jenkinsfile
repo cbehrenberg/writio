@@ -42,8 +42,10 @@ pipeline {
         }
         stage('create release branch') {
             steps {
-                TMP_DIR = sh(script: 'mktemp -d -t writio-XXXXXXXXXX', returnStdout: true).trim()
-                echo "created tmp dir: ${TMP_DIR}"
+                script {
+                    TMP_DIR = sh(script: 'mktemp -d -t writio-XXXXXXXXXX', returnStdout: true).trim()
+                    echo "created tmp dir: ${TMP_DIR}"
+                }
             }
         }
     }
