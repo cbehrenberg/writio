@@ -36,15 +36,23 @@ pipeline {
             }
         }
         stage('build branch') {
+            when {
+                expression { false }
+            }
             steps {
                 sh 'mvn clean install'
             }
         }
         stage('create release branch') {
+            when {
+                expression { true }
+            }
             steps {
                 script {
-                    TMP_DIR = sh(script: 'mktemp -d -t writio-XXXXXXXXXX', returnStdout: true).trim()
-                    echo "created tmp dir: ${TMP_DIR}"
+                    target_branch="release/${params.version}"
+                    sh "git status"
+                    sh "git checkout -b ${target_branch} ${params.branch}"
+                    sh "git status"
                 }
             }
         }
