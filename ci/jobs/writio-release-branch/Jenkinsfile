@@ -35,9 +35,15 @@ pipeline {
                 git branch: "${params.branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: repositoryUrl
             }
         }
-        stage('build') {
+        stage('build branch') {
             steps {
                 sh 'mvn clean install'
+            }
+        }
+        stage('create release branch') {
+            steps {
+                TMP_DIR = sh(script: 'mktemp -d -t writio-XXXXXXXXXX', returnStdout: true).trim()
+                echo "created tmp dir: ${TMP_DIR}"
             }
         }
     }

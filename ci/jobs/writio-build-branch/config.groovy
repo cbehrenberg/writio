@@ -1,6 +1,6 @@
 def repositoryUrl = 'https://github.com/cbehrenberg/writio.git'
 def jobName = 'writio-build-branch'
-def defaultBranch = 'issue-11-add_release_job_and_publish_CI_images_to_dockerhub_for_easier_reuse'
+def defaultBranch = 'dev'
 
 pipelineJob(jobName) {
 
@@ -20,12 +20,6 @@ pipelineJob(jobName) {
             selectedValue("NONE")
             quickFilterEnabled(false)
             useRepository(repositoryUrl)
-        }
-
-		credentialsParam('credentials') {
-            type('com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl')
-            required()
-            description('writio GitHub credentials')
         }
 
 		booleanParam("parameterization", false, "If checked, a dry run is performed to initialize parameters")
