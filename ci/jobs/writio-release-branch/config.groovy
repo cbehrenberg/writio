@@ -4,22 +4,33 @@ def defaultBranch = 'dev'
 
 pipelineJob(jobName) {
 
-    description("Builds and releases writio branch.")
+    description("Builds and releases a writio branch.")
 	
     parameters {
+
         gitParameter {
-            name("from_branch")
+            name("branch")
             type("PT_BRANCH")
-            defaultValue("dev")
-            branch("dev")
-            description("writio branch to release from")
+            defaultValue(defaultBranch)
+            branch(defaultBranch)
+            description("writio branch to release from, default: ${defaultBranch}")
             branchFilter("origin/(.*)")
             tagFilter("*")
             sortMode("NONE")
             selectedValue("NONE")
             quickFilterEnabled(false)
-            useRepository("https://github.com/cbehrenberg/writio.git")
+            useRepository(repositoryUrl)
         }
+
+		stringParam("version", "<version>", "writio release version")
+
+		credentialsParam('credentials') {
+            type('com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl')
+            required()
+            description('writio GitHub credentials')
+        }
+
+		booleanParam("parameterization", false, "If checked, a dry run is performed to initialize parameters")
     }
 
     properties {

@@ -1,16 +1,32 @@
 pipeline {
-	agent {
-		docker {
-			image "maven:amazoncorretto"
-			args "-v writio_ci_maven_repository:/root/.m2/repository"
-			reuseNode true
-		}
-	}
-	stages {
-		stage('mvn-clean-install') {
-			steps {
-				sh "mvn clean install"
-			}
-		}
-	}
+    agent {
+        docker {
+            image 'maven:amazoncorretto'
+            args '-v writio_ci_maven_repository:/root/.m2/repository'
+            reuseNode true
+        }
+    }
+    parameters {
+        booleanParam(name: 'parameterization', defaultValue: false, description: 'If checked, a dry run is performed to initialize parameters')
+    }
+    options {
+        disableConcurrentBuilds()
+    }
+    stages {
+        stage('parameterization') {
+            steps {
+                script {
+                    if ("${params.parameterization}" == 'true') {
+                        currentBuild.result = 'aborted'
+                        error('dry run completed, job parameterized')
+                    }
+                }
+            }
+        }
+        stage('build') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+    }
 }

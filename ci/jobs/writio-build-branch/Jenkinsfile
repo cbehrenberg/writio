@@ -1,25 +1,42 @@
+def repositoryUrl = 'https://github.com/cbehrenberg/writio.git'
+def defaultBranch = 'dev'
+
 pipeline {
-	parameters {
-		gitParameter branchFilter: 'origin/(.*)', defaultValue: 'dev', name: 'BRANCH', type: 'PT_BRANCH'
-	}
-	agent {
-		docker {
-			image "maven:amazoncorretto"
-			args "-v writio_ci_maven_repository:/root/.m2/repository"
-			reuseNode true
-		}
-	}
-	stages {
-		stage('git-checkout') {
-			steps {
-				echo "checking out git branch '${params.BRANCH}'..."
-				git branch: "${params.BRANCH}", changelog: false, poll: false, url: 'https://github.com/cbehrenberg/writio.git'
-			}
-		}
-		stage('mvn-clean-install') {
-			steps {
-				sh "mvn clean install"
-			}
-		}
-	}
+    parameters {
+        gitParameter branchFilter: 'origin/(.*)', defaultValue: defaultBranch, name: 'branch', type: 'PT_BRANCH', description: "writio branch to build, default: ${defaultBranch}")
+        booleanParam(name: 'parameterization', defaultValue: false, description: 'If checked, a dry run is performed to initialize parameters')
+    }
+    agent {
+        docker {
+            image 'maven:amazoncorretto'
+            args '-v writio_ci_maven_repository:/root/.m2/repository'
+            reuseNode true
+        }
+    }
+    options {
+        disableConcurrentBuilds()
+    }
+    stages {
+        stage('parameterization') {
+            steps {
+                script {
+                    if ("${params.parameterization}" == 'true') {
+                        currentBuild.result = 'aborted'
+                        error('dry run completed, job parameterized')
+                    }
+                }
+            }
+        }    
+        stage('clone') {
+            steps {
+                echo "cloning git branch '${params.branch}'..."
+                git branch: "${params.branch}", changelog: false, poll: false, url: repositoryUrl
+            }
+        }
+        stage('build') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+    }
 }

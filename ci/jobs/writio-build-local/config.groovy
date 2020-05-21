@@ -4,6 +4,10 @@ pipelineJob(jobName) {
 
     description("Builds the current writio working copy from local disk.")
 
+    parameters {
+		booleanParam("parameterization", false, "If checked, a dry run is performed to initialize parameters")
+    }
+
     properties {
 
         rebuild {

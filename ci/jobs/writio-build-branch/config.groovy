@@ -7,19 +7,22 @@ pipelineJob(jobName) {
     description("Builds a writio branch from remote GitHub repository '${repositoryUrl}'. When executed the first time, the ${defaultBranch}-branch will be built (default). Afterwards, you can select from a combo box all available other branches.")
 
     parameters {
+
         gitParameter {
-            name("BRANCH")
+            name("branch")
             type("PT_BRANCH")
-            defaultValue("dev")
-            branch("dev")
-            description("writio branch to build")
+            defaultValue(defaultBranch)
+            branch(defaultBranch)
+            description("writio branch to build, default: ${defaultBranch}")
             branchFilter("origin/(.*)")
             tagFilter("*")
             sortMode("NONE")
             selectedValue("NONE")
             quickFilterEnabled(false)
-            useRepository("https://github.com/cbehrenberg/writio.git")
+            useRepository(repositoryUrl)
         }
+
+		booleanParam("parameterization", false, "If checked, a dry run is performed to initialize parameters")
     }
 
     properties {
