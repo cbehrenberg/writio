@@ -32,7 +32,12 @@ pipeline {
         stage('clone') {
             steps {
                 echo "cloning git branch '${params.branch}'..."
-                git branch: "${params.branch}", changelog: false, poll: false, url: repositoryUrl
+                git branch: "${params.branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: repositoryUrl
+            }
+        }
+        stage('build') {
+            steps {
+                sh 'mvn clean install'
             }
         }
     }

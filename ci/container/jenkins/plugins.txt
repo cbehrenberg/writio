@@ -29,3 +29,4 @@ workflow-aggregator
 configuration-as-code
 job-dsl
 filesystem_scm
+simple-theme-plugin
