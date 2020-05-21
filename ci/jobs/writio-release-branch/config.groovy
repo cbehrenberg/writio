@@ -13,7 +13,7 @@ pipelineJob(jobName) {
             type("PT_BRANCH")
             defaultValue(defaultBranch)
             branch(defaultBranch)
-            description("writio branch to release from, default: ${defaultBranch}")
+            description("writio branch to release from")
             branchFilter("origin/(.*)")
             tagFilter("*")
             sortMode("NONE")

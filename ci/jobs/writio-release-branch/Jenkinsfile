@@ -10,7 +10,7 @@ pipeline {
         }
     }
     parameters {
-        gitParameter branchFilter: 'origin/(.*)', defaultValue: defaultBranch, name: 'branch', type: 'PT_BRANCH', description: "writio branch to release from, default: ${defaultBranch}")
+        gitParameter(branchFilter: 'origin/(.*)', defaultValue: defaultBranch, name: 'branch', type: 'PT_BRANCH', description: "writio branch to release from")
         string(name: "version", defaultValue: "<version>", description: "writio release version")
         credentials(name: 'credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio GitHub credentials', required: true)
         booleanParam(name: 'parameterization', defaultValue: false, description: 'If checked, a dry run is performed to initialize parameters')
