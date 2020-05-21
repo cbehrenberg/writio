@@ -4,7 +4,7 @@ def defaultBranch = 'dev'
 
 pipelineJob(jobName) {
 
-    description("Builds a writio branch from remote GitHub repository '${repositoryUrl}'. When executed the first time, the ${defaultBranch}-branch will be built (default). Afterwards, you can select from a combo box all available other branches.")
+    description("Builds a writio branch.")
 
     parameters {
 
@@ -20,6 +20,12 @@ pipelineJob(jobName) {
             selectedValue("NONE")
             quickFilterEnabled(false)
             useRepository(repositoryUrl)
+        }
+
+		credentialsParam('credentials') {
+            type('com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl')
+            required()
+            description('writio GitHub credentials')
         }
 
 		booleanParam("parameterization", false, "If checked, a dry run is performed to initialize parameters")
