@@ -1,4 +1,5 @@
 jenkins:
+  systemMessage: "writio Jenkins\n\n"
   numExecutors: 1
 tool:
   git:
@@ -9,3 +10,10 @@ jobs:
   - file: "${REF}/jobs/writio-build-branch/config.groovy"
   - file: "${REF}/jobs/writio-build-local/config.groovy"
   - file: "${REF}/jobs/writio-release-branch/config.groovy"
+unclassified:
+  location:
+    url: "http://localhost:48081/"
+  simple-theme-plugin:
+    elements:
+      - cssUrl: 
+          url: "http://localhost:48081/userContent/writio.css"
