@@ -23,6 +23,11 @@ pipeline {
                 }
             }
         }
+        stage('clean') {
+            steps {
+                step([$class: 'WsCleanup'])
+            }
+        }
         stage('clone') {
             steps {
                 echo "cloning git branch '${params.branch}'..."
