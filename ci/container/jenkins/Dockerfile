@@ -4,7 +4,10 @@ ENV JENKINS_USER="admin" JENKINS_PASS="admin" JAVA_OPTS="-Djenkins.install.runSe
 
 USER root
 
-RUN apk add --no-cache --update docker bash git openssh
+RUN set -x \
+    && apk update && apk upgrade \
+    && apk add --no-cache docker bash git openssh \
+    && git --version && bash --version && ssh -V
 
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
 COPY userContent /var/jenkins_home/userContent

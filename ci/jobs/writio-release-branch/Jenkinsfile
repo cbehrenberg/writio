@@ -2,13 +2,6 @@ def repositoryUrl = 'https://github.com/cbehrenberg/writio.git'
 def defaultBranch = 'dev'
 
 pipeline {
-    agent {
-        docker {
-            image "maven:amazoncorretto"
-            args "-v writio_ci_maven_repository:/root/.m2/repository"
-            reuseNode true
-        }
-    }
     parameters {
         gitParameter(branchFilter: 'origin/(.*)', defaultValue: defaultBranch, name: 'branch', type: 'PT_BRANCH', description: "writio branch to release from")
         string(name: "version", defaultValue: "<version>", description: "writio release version")
@@ -18,6 +11,7 @@ pipeline {
     options {
         disableConcurrentBuilds()
     }
+    agent none
     stages {
         stage('parameterization') {
             steps {
@@ -36,6 +30,13 @@ pipeline {
             }
         }
         stage('build branch') {
+            agent {
+                docker {
+                    image "maven:amazoncorretto"
+                    args "-v writio_ci_maven_repository:/root/.m2/repository"
+                    reuseNode true
+                }
+            }
             when {
                 expression { false }
             }
@@ -44,6 +45,12 @@ pipeline {
             }
         }
         stage('create release branch') {
+            agent {
+                docker {
+                    image "alpine/git:latest"
+                    reuseNode true
+                }
+            }
             when {
                 expression { true }
             }
