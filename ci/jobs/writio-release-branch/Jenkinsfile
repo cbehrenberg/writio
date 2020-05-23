@@ -11,7 +11,7 @@ pipeline {
     options {
         disableConcurrentBuilds()
     }
-    agent none
+    agent any
     stages {
         stage('parameterization') {
             steps {
@@ -32,8 +32,8 @@ pipeline {
         stage('build branch') {
             agent {
                 docker {
-                    image "maven:amazoncorretto"
-                    args "-v writio_ci_maven_repository:/root/.m2/repository"
+                    image 'maven:amazoncorretto'
+                    args '-v writio_ci_maven_repository:/root/.m2/repository'
                     reuseNode true
                 }
             }
@@ -45,12 +45,6 @@ pipeline {
             }
         }
         stage('create release branch') {
-            agent {
-                docker {
-                    image "alpine/git:latest"
-                    reuseNode true
-                }
-            }
             when {
                 expression { true }
             }
