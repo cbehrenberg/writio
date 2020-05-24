@@ -1,11 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:amazoncorretto'
-            args '-v writio_ci_maven_repository:/root/.m2/repository'
-            reuseNode true
-        }
-    }
+    agent any
     parameters {
         booleanParam(name: 'parameterization', defaultValue: false, description: 'If checked, a dry run is performed to initialize parameters')
     }
