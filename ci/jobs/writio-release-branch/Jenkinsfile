@@ -56,7 +56,7 @@ pipeline {
                     sh "git checkout -b ${target_branch} ${params.branch}"
                     
                     echo "switching maven version ${params.version}..."
-                    sh "mvn -f versions:set -DnewVersion=${params.version} -DgenerateBackupPoms=false"
+                    sh "mvn versions:set -DnewVersion=${params.version} -DgenerateBackupPoms=false"
                     
                     echo "switching latest to specific version ${version} for container yamls..."
                     sh "sed -i \"s/latest/${params.version}/g\" ./ci/.env"
