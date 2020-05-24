@@ -55,10 +55,22 @@ pipeline {
             }
             steps {
                 script {
+
                     target_branch="release/${params.version}"
-                    sh "git status"
+                    message="create release branch for version ${params.version}"
+
+                    echo "switching to branch ${target_branch} for release..."
                     sh "git checkout -b ${target_branch} ${params.branch}"
-                    sh "git status"
+                    
+                    echo "switching maven version ${params.version}..."
+                    sh "mvn -f versions:set -DnewVersion=${params.version} -DgenerateBackupPoms=false"
+                    
+                    echo "switching latest to specific version ${version} for container yamls..."
+                    sh "sed -i \"s/latest/${params.version}/g\" ./ci/.env"
+                    sh "cat ./ci/.env"
+
+                    echo "comitting changes..."
+                    sh "git commit -a -m \"${message}\""
                 }
             }
         }
