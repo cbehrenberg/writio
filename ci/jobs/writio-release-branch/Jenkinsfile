@@ -5,6 +5,8 @@ pipeline {
     parameters {
         gitParameter(branchFilter: 'origin/(.*)', defaultValue: defaultBranch, name: 'branch', type: 'PT_BRANCH', description: "writio branch to release from")
         string(name: "version", defaultValue: "<version>", description: "writio release version")
+        string(name: "name", defaultValue: "", description: "Firstname Lastname")
+        string(name: "email", defaultValue: "", description: "Your email address")
         credentials(name: 'credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio GitHub credentials', required: true)
         booleanParam(name: 'parameterization', defaultValue: false, description: 'If checked, a dry run is performed to initialize parameters')
     }
@@ -48,6 +50,10 @@ pipeline {
             }
             steps {
                 script {
+
+                    echo "setting name and email..."
+                    sh "git config --global user.name \"${params.name}\""
+                    sh "git config --global user.email ${params.email}"
 
                     target_branch="release/${params.version}"
                     message="create release branch for version ${params.version}"

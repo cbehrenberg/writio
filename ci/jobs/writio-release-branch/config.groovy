@@ -24,6 +24,10 @@ pipelineJob(jobName) {
 
 		stringParam("version", "<version>", "writio release version")
 
+		stringParam("name", "", "Firstname Lastname")
+
+		stringParam("email", "", "Your email address")
+
 		credentialsParam('credentials') {
             type('com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl')
             required()
