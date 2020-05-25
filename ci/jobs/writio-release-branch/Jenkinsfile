@@ -36,11 +36,9 @@ pipeline {
                     sh "git config --global user.name \"${params.name}\""
                     sh "git config --global user.email ${params.email}"
 					
-					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-						repositoryUrl = "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
-						echo "added authentication parameters to repository URL: ${repositoryUrl}"
-					}
-					echo "added authentication parameters to repository URL: ${repositoryUrl}"
+					#withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+					#	repositoryUrl = "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
+					#}
 				}
             }
         }
