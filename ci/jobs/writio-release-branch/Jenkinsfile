@@ -36,6 +36,9 @@ pipeline {
                     sh "git config --global user.name \"${params.name}\""
                     sh "git config --global user.email ${params.email}"
 					
+					sh "git config --global credential.helper cache"
+					sh "git config --global push.default simple"
+					
 					/*withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 						repositoryUrl = "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
 					}*/
