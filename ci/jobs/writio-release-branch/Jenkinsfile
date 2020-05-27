@@ -33,9 +33,6 @@ pipeline {
         }
         stage('preparation') {
             steps {
-			
-                step([$class: 'WsCleanup'])
-
                 script {
                     
 					echo "setting name and email..."
@@ -48,19 +45,20 @@ pipeline {
 				}
             }
         }
-        stage('clone source branch') {
+        stage('build source branch') {
             steps {
+
+				// clean
+                step([$class: 'WsCleanup'])
+
+				// clone
 				withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-					echo "cloning git branch '${params.branch}'..."
+					echo "cloning git source branch '${params.branch}'..."
 					git branch: "${params.branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: repositoryUrl
 				}
-            }
-        }
-        stage('build source branch') {
-            when {
-                expression { false }
-            }
-            steps {
+
+				// build
+				echo "building source branch '${params.branch}'..."
                 sh 'mvn clean install'
             }
         }
@@ -93,6 +91,23 @@ pipeline {
 						sh "git push origin \"${target_branch}\""
 					}
                 }
+            }
+        }
+        stage('build release branch') {
+            steps {
+
+				// clean
+                step([$class: 'WsCleanup'])
+
+				// clone
+				withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+					echo "cloning git release branch '${target_branch}'..."
+					git branch: "${target_branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: repositoryUrl
+				}
+
+				// build
+				echo "building release branch '${params.branch}'..."
+                sh 'mvn clean install'
             }
         }
     }

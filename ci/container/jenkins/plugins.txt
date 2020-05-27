@@ -31,3 +31,4 @@ job-dsl
 filesystem_scm
 simple-theme-plugin
 config-file-provider
+mask-passwords
