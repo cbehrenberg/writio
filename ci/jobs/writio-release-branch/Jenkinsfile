@@ -39,8 +39,8 @@ pipeline {
                     sh "git config --global user.name \"${params.name}\""
                     sh "git config --global user.email ${params.email}"
 					
-					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-						repositoryUrl = "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
+					withCredentials([usernameColonPassword(credentialsId: "${params.credentials}", variable: 'GITHUB_CREDENTIALS')]) {
+						repositoryUrl = "https://${GITHUB_CREDENTIALS}@github.com/cbehrenberg/writio.git"
 					}
 				}
             }
@@ -52,7 +52,7 @@ pipeline {
                 step([$class: 'WsCleanup'])
 
 				// clone
-				withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+				withCredentials([usernameColonPassword(credentialsId: "${params.credentials}", variable: 'GITHUB_CREDENTIALS')]) {
 					echo "cloning git source branch '${params.branch}'..."
 					git branch: "${params.branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: repositoryUrl
 				}
@@ -68,7 +68,7 @@ pipeline {
             }
             steps {
                 script {
-					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+					withCredentials([usernameColonPassword(credentialsId: "${params.credentials}", variable: 'GITHUB_CREDENTIALS')]) {
                     
 						target_branch="release/${params.version}"
 						message="create release branch for version ${params.version}"
@@ -100,7 +100,7 @@ pipeline {
                 step([$class: 'WsCleanup'])
 
 				// clone
-				withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+				withCredentials([usernameColonPassword(credentialsId: "${params.credentials}", variable: 'GITHUB_CREDENTIALS')]) {
 					echo "cloning git release branch '${target_branch}'..."
 					git branch: "${target_branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: repositoryUrl
 				}
