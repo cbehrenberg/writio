@@ -40,7 +40,9 @@ pipeline {
                     sh "git config --global user.email ${params.email}"
 					
 					withCredentials([usernameColonPassword(credentialsId: "${params.credentials}", variable: 'GITHUB_CREDENTIALS')]) {
-						repositoryUrl = "https://${GITHUB_CREDENTIALS}@github.com/cbehrenberg/writio.git"
+						wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: java.net.URLEncoder.encode("${GITHUB_CREDENTIALS}", "UTF-8"), var: 'GITHUB_CREDENTIALS_ENC']]]) {
+							repositoryUrl = "https://${GITHUB_CREDENTIALS}@github.com/cbehrenberg/writio.git"
+						}
 					}
 				}
             }
