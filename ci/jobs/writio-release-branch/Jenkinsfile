@@ -31,6 +31,20 @@ pipeline {
                 }
             }
         }
+        stage('preparation') {
+			when {
+				expression { true }
+			}
+            steps {
+                script {
+					withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+						echo "setting up git..."
+						sh "git config --global credential.helper cache"
+						sh "git config --global user.name \"${USERNAME}\""
+					}
+				}
+            }
+        }
         stage('build source branch') {
 			when {
 				expression { true }
