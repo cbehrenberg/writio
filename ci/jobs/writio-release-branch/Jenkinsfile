@@ -5,8 +5,6 @@ pipeline {
     parameters {
         gitParameter(name: 'branch', branchFilter: 'origin/(.*)', defaultValue: defaultBranch, type: 'PT_BRANCH', description: "writio branch to release from")
         string(name: "version", defaultValue: "", description: "writio release version")
-        //string(name: "name", defaultValue: "", description: "Firstname Lastname")
-        //string(name: "email", defaultValue: "", description: "Your email address")
         credentials(name: 'credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio GitHub credentials', required: true)
         booleanParam(name: 'parameterization', defaultValue: false, description: 'If checked, a dry run is performed to initialize parameters')
     }
@@ -29,26 +27,9 @@ pipeline {
 					
 					if (!(params.branch?.trim())) { error("Build failed because source branch is not selected!")}
 					if (!(params.version?.trim())) { error("Build failed because no release version was provided!")}
-					//if (!(params.name?.trim())) { error("Build failed because no name was provided!")}
-					//if (!(params.email?.trim())) { error("Build failed because no email was provided!")}
                 }
             }
         }
-		/*
-        stage('preparation') {
-			when {
-				expression { true }
-			}
-            steps {
-                script {
-					echo "setting up git..."
-					sh "git config --global credential.helper cache"
-					sh "git config --global user.email \"${params.email}\""
-					sh "git config --global user.name \"${params.name}\""
-				}
-            }
-        }
-		*/
         stage('build source branch') {
 			when {
 				expression { true }
