@@ -32,7 +32,7 @@ pipeline {
         }
         stage('build source branch') {
 			when {
-				expression { false }
+				expression { true }
 			}
             steps {
 
@@ -52,7 +52,7 @@ pipeline {
         }
         stage('create release branch') {
             when {
-                expression { false }
+                expression { true }
             }
             steps {
                 script {
@@ -77,7 +77,7 @@ pipeline {
         }
         stage('build release branch') {
 			when {
-				expression { false }
+				expression { true }
 			}
             steps {
 				// build
@@ -87,7 +87,7 @@ pipeline {
         }
         stage('push release branch') {
             when {
-                expression { false }
+                expression { true }
             }
             steps {
                 script {
@@ -100,7 +100,7 @@ pipeline {
         }
         stage('creating tag') {
             when {
-                expression { false }
+                expression { true }
             }
             steps {
                 script {
@@ -114,9 +114,19 @@ pipeline {
                 }
             }
         }
+        stage('deploy') {
+			when {
+				expression { true }
+			}
+            steps {
+				// build
+				echo "deploying from release branch '${params.branch}'..."
+                sh 'mvn clean deploy'
+            }
+        }
         stage('deleting release branch') {
             when {
-                expression { false }
+                expression { true }
             }
             steps {
                 script {
@@ -126,26 +136,6 @@ pipeline {
 						sh "git push origin --delete \"${target_branch}\""
 					}
                 }
-            }
-        }
-        stage('build and deploy tag') {
-			when {
-				expression { true }
-			}
-            steps {
-
-				// clean
-                step([$class: 'WsCleanup'])
-
-				// clone
-				withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-					echo "cloning git tag '${params.version}'..."
-					git branch: "origin/tags/${params.version}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
-				}
-
-				// build
-				echo "building and deploying tag '${params.version}'..."
-                sh 'mvn clean deploy'
             }
         }
     }
