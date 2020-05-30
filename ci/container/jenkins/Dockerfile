@@ -41,7 +41,11 @@ RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/ap
 COPY userContent /var/jenkins_home/userContent
 
 # install jenkins plugins
-COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
+
+COPY plugins.core.txt /usr/share/jenkins/ref/plugins.core.txt
+RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.core.txt
+
+COPY plugins.ci.txt /usr/share/jenkins/ref/plugins.ci.txt
+RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.ci.txt
 
 USER jenkins
