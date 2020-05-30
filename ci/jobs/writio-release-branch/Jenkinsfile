@@ -33,7 +33,7 @@ pipeline {
         }
         stage('build source branch') {
 			when {
-				expression { true }
+				expression { false }
 			}
             steps {
 
@@ -53,7 +53,7 @@ pipeline {
         }
         stage('create release branch') {
             when {
-                expression { true }
+                expression { false }
             }
             steps {
                 script {
@@ -78,7 +78,7 @@ pipeline {
         }
         stage('build release branch') {
 			when {
-				expression { true }
+				expression { false }
 			}
             steps {
 				// build
@@ -88,7 +88,7 @@ pipeline {
         }
         stage('push release branch') {
             when {
-                expression { true }
+                expression { false }
             }
             steps {
                 script {
@@ -101,7 +101,7 @@ pipeline {
         }
         stage('creating tag') {
             when {
-                expression { true }
+                expression { false }
             }
             steps {
                 script {
@@ -117,7 +117,7 @@ pipeline {
         }
         stage('deploy') {
 			when {
-				expression { true }
+				expression { false }
 			}
             steps {
                 script {
@@ -128,9 +128,25 @@ pipeline {
                 }
             }
         }
+        stage('merge to master') {
+			when {
+				expression { true }
+			}
+            steps {
+
+				// clean
+                step([$class: 'WsCleanup'])
+
+				// clone
+				withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+					echo "cloning git master branch..."
+					git branch: "master", credentialsId: "${params.git_credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
+				}
+            }
+        }
         stage('deleting release branch') {
             when {
-                expression { true }
+                expression { false }
             }
             steps {
                 script {
