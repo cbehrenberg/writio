@@ -1,4 +1,3 @@
-def repositoryUrl = 'https://github.com/cbehrenberg/writio.git'
 def defaultBranch = 'dev'
 
 pipeline {
@@ -40,13 +39,10 @@ pipeline {
 			}
             steps {
                 script {
-					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-						echo "setting up git..."
-						sh "git config --global credential.helper cache"
-						sh "git config --global user.email \"${params.email}\""
-						sh "git config --global user.name \"${USERNAME}\""
-						sh "git config --global user.password \"${PASSWORD}\""
-					}
+					echo "setting up git..."
+					sh "git config --global credential.helper cache"
+					sh "git config --global user.email \"${params.email}\""
+					sh "git config --global user.name \"${params.name}\""
 				}
             }
         }
@@ -60,9 +56,8 @@ pipeline {
                 step([$class: 'WsCleanup'])
 
 				// clone
-				echo "cloning git source branch '${params.branch}'..."
-
 				withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+					echo "cloning git source branch '${params.branch}'..."
 					git branch: "${params.branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
 				}
 
@@ -78,25 +73,29 @@ pipeline {
             steps {
                 script {
 				
-					target_branch="release/${params.version}"
-					message="create release branch for version ${params.version}"
+					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 
-					echo "switching to branch ${target_branch} for release..."
-					sh "git checkout -b ${target_branch} ${params.branch}"
-					
-					echo "switching maven version ${params.version}..."
-					sh "mvn versions:set -DnewVersion=${params.version} -DgenerateBackupPoms=false"
-					
-					echo "switching latest to specific version ${version} for container yamls..."
-					sh "sed -i \"s/latest/${params.version}/g\" ./ci/.env"
-					sh "cat ./ci/.env"
+						target_branch="release/${params.version}"
+						message="create release branch for version ${params.version}"
 
-					echo "comitting changes locally..."
-					sh "git commit -a -m \"${message}\""
+						echo "switching to branch ${target_branch} for release..."
+						sh "git checkout -b ${target_branch} ${params.branch}"
+						
+						echo "switching maven version ${params.version}..."
+						sh "mvn versions:set -DnewVersion=${params.version} -DgenerateBackupPoms=false"
+						
+						echo "switching latest to specific version ${version} for container yamls..."
+						sh "sed -i \"s/latest/${params.version}/g\" ./ci/.env"
+						sh "cat ./ci/.env"
+
+						echo "comitting changes locally..."
+						sh "git commit -a -m \"${message}\""
+						
+						echo "pushing changes to remote..."
+						
+						sh "git push origin \"${target_branch}\""
 					
-					echo "pushing changes to remote..."
-					
-					sh "git push origin \"${target_branch}\""
+					}
                 }
             }
         }
@@ -108,10 +107,12 @@ pipeline {
 
 				// clean
                 step([$class: 'WsCleanup'])
-
+				
 				// clone
-				echo "cloning git release branch '${target_branch}'..."
-				git branch: "${target_branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: repositoryUrl
+				withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {					
+					echo "cloning git release branch '${target_branch}'..."
+					git branch: "${target_branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"					
+				}
 
 				// build
 				echo "building release branch '${params.branch}'..."
