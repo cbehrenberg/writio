@@ -114,5 +114,19 @@ pipeline {
                 }
             }
         }
+        stage('deleting release branch') {
+            when {
+                expression { true }
+            }
+            steps {
+                script {
+					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+						
+						echo "deleting remote release branch..."						
+						sh "git push origin --delete \"${target_branch}\""
+					}
+                }
+            }
+        }
     }
 }
