@@ -140,7 +140,7 @@ pipeline {
 				// clone
 				withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 					echo "cloning git tag '${params.version}'..."
-					git branch: "refs/tags/${params.version}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
+					git branch: "origin/tags/${params.version}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
 				}
 
 				// build
