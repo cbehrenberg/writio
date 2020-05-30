@@ -61,7 +61,10 @@ pipeline {
 
 				// clone
 				echo "cloning git source branch '${params.branch}'..."
-				git branch: "${params.branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: repositoryUrl
+
+				withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+					git branch: "${params.branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
+				}
 
 				// build
 				echo "building source branch '${params.branch}'..."
