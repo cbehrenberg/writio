@@ -123,7 +123,7 @@ pipeline {
                 script {
 					withCredentials([usernamePassword(credentialsId: "${params.docker_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 						echo "deploying from release branch '${params.branch}'..."
-						sh "mvn -s ./ci/jobs/writio-release-branch/settings.xml clean deploy -Ddocker.io.username=${USERNAME} -Ddocker.io.password=${PASSWORD}"
+						sh "mvn -s ./ci/jobs/writio-release-branch/settings.xml clean install deploy -Ddocker.io.username=${USERNAME} -Ddocker.io.password=${PASSWORD}"
 					}
                 }
             }
