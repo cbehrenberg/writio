@@ -142,6 +142,8 @@ pipeline {
 					echo "cloning git master branch..."
 					git branch: "master", credentialsId: "${params.git_credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
 				}
+				
+				sh "git merge \"${target_branch}\""
             }
         }
         stage('deleting release branch') {
