@@ -102,7 +102,7 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
-        stage('push release tag') {
+        stage('push release branch') {
             when {
                 expression { true }
             }
@@ -111,6 +111,20 @@ pipeline {
 					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 						echo "pushing changes to remote..."						
 						sh "git push -f origin \"${target_branch}\""
+					}
+                }
+            }
+        }
+        stage('creating tag') {
+            when {
+                expression { true }
+            }
+            steps {
+                script {
+					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+						echo "echo "creating remote git tag ${params.version}..."						
+						sh "git tag -m \"${message}\" \"${params.version}\""
+						sh "git push origin \"${params.version}\""
 					}
                 }
             }
