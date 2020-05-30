@@ -5,7 +5,8 @@ pipeline {
     parameters {
         gitParameter(name: 'branch', branchFilter: 'origin/(.*)', defaultValue: defaultBranch, type: 'PT_BRANCH', description: "writio branch to release from")
         string(name: "version", defaultValue: "", description: "writio release version")
-        credentials(name: 'credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio GitHub credentials', required: true)
+        credentials(name: 'git_credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio GitHub credentials', required: true)
+        credentials(name: 'docker_credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio DockerHub credentials', required: true)
         booleanParam(name: 'parameterization', defaultValue: false, description: 'If checked, a dry run is performed to initialize parameters')
     }
     options {
@@ -40,9 +41,9 @@ pipeline {
                 step([$class: 'WsCleanup'])
 
 				// clone
-				withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+				withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 					echo "cloning git source branch '${params.branch}'..."
-					git branch: "${params.branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
+					git branch: "${params.branch}", credentialsId: "${params.git_credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
 				}
 
 				// build
@@ -91,7 +92,7 @@ pipeline {
             }
             steps {
                 script {
-					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+					withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 						echo "pushing changes to remote..."						
 						sh "git push -f origin \"${target_branch}\""
 					}
@@ -104,7 +105,7 @@ pipeline {
             }
             steps {
                 script {
-					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+					withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 						
 						echo "creating remote git tag ${params.version}..."						
 						
@@ -119,9 +120,12 @@ pipeline {
 				expression { true }
 			}
             steps {
-				// build
-				echo "deploying from release branch '${params.branch}'..."
-                sh 'mvn clean deploy'
+                script {
+					withCredentials([usernamePassword(credentialsId: "${params.docker_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+						echo "deploying from release branch '${params.branch}'..."
+						sh "mvn -s ./ci/jobs/writio-release-branch/settings.xml clean deploy -Ddocker.io.username=${USERNAME} -Ddocker.io.password=${PASSWORD}"
+					}
+                }
             }
         }
         stage('deleting release branch') {
@@ -130,8 +134,7 @@ pipeline {
             }
             steps {
                 script {
-					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-						
+					withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 						echo "deleting remote release branch..."						
 						sh "git push origin --delete \"${target_branch}\""
 					}
