@@ -4,10 +4,7 @@ services:
 
   # jenkins ci
   jenkins:
-    build:
-      context: ./docker/jenkins
-      dockerfile: Dockerfile
-    image: writio/jenkins:latest
+    image: writio/jenkins:${WRITIO_VERSION}
     container_name: "${COMPOSE_PROJECT_NAME}_jenkins"
     restart: unless-stopped
     user: root
@@ -26,16 +23,16 @@ services:
       - type: bind
         source: "./.."
         target: "/var/jenkins_home/jobs/writio-build-local/workspace"
+      - type: volume
+        source: maven_repository
+        target: /root/.m2/repository
     ports:
       - "${LOCAL_JENKINS_PORT}:8080"
       - "50000:50000"
 
   # file manager for volumes
   filebrowser:
-    build:
-      context: ./docker/filebrowser
-      dockerfile: Dockerfile
-    image: writio/filebrowser:latest
+    image: writio/filebrowser:${WRITIO_VERSION}
     container_name: "${COMPOSE_PROJECT_NAME}_filebrowser"
     restart: unless-stopped
     volumes:

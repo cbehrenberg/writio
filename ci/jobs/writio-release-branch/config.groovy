@@ -1,11 +1,11 @@
 def repositoryUrl = 'https://github.com/cbehrenberg/writio.git'
-def jobName = 'writio-build-branch'
-def defaultBranch = 'dev'
+def jobName = 'writio-release-branch'
+def defaultBranch = 'issue-11-add_release_job_and_publish_CI_images_to_dockerhub_for_easier_reuse'
 
 pipelineJob(jobName) {
 
-    description("Builds a writio branch.")
-
+    description("Builds and releases a writio branch.")
+	
     parameters {
 
         gitParameter {
@@ -13,7 +13,7 @@ pipelineJob(jobName) {
             type("PT_BRANCH")
             defaultValue(defaultBranch)
             branch(defaultBranch)
-            description("writio branch to build")
+            description("writio branch to release from")
             branchFilter("origin/(.*)")
             tagFilter("*")
             sortMode("NONE")
@@ -22,13 +22,27 @@ pipelineJob(jobName) {
             useRepository(repositoryUrl)
         }
 
+		stringParam("version", "", "writio release version")
+
+		credentialsParam('git_credentials') {
+            type('com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl')
+            required()
+            description('writio GitHub credentials')
+        }
+
+		credentialsParam('docker_credentials') {
+            type('com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl')
+            required()
+            description('writio DockerHub credentials')
+        }
+
 		booleanParam("parameterization", false, "If checked, a dry run is performed to initialize parameters")
     }
 
     properties {
+	
+		githubProjectUrl(repositoryUrl)
 
-        githubProjectUrl(repositoryUrl)
-        
         rebuild {
             autoRebuild(false) 
         }
@@ -42,6 +56,7 @@ pipelineJob(jobName) {
     }
 
     definition {
+	
         cpsScm {
 
             scriptPath "ci/jobs/${jobName}/Jenkinsfile"
@@ -63,4 +78,3 @@ pipelineJob(jobName) {
     }
 }
 
-queue(jobName)

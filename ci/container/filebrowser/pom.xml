@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.cbehrenberg.writio.ci</groupId>
+    <artifactId>container</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>com.cbehrenberg.writio.ci.container</groupId>
+  <artifactId>filebrowser</artifactId>
+
+  <name>writio ci container: filebrowser</name>
+
+  <packaging>pom</packaging>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>dockerfile-maven-plugin</artifactId>
+        <configuration>
+          <repository>writio/${project.artifactId}</repository>
+        </configuration>
+        <executions>
+
+          <execution>
+            <id>tag-latest</id>
+            <goals>
+              <goal>build</goal>
+              <goal>tag</goal>
+            </goals>
+            <configuration>
+              <tag>latest</tag>
+              <skip>${container.tag.latest.skip}</skip>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>push-latest</id>
+            <goals>
+              <goal>push</goal>
+            </goals>
+            <configuration>
+              <tag>latest</tag>
+              <skip>${container.push.skip}</skip>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>tag-version</id>
+            <goals>
+              <goal>build</goal>
+              <goal>tag</goal>
+            </goals>
+            <configuration>
+              <tag>${container.tag.version}</tag>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>push-version</id>
+            <goals>
+              <goal>push</goal>
+            </goals>
+            <configuration>
+              <tag>${container.tag.version}</tag>
+              <skip>${container.push.skip}</skip>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>
