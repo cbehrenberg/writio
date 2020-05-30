@@ -65,7 +65,7 @@
           <execution>
             <id>push-version</id>
             <goals>
-              <goal>tag</goal>
+              <goal>push</goal>
             </goals>
             <configuration>
               <tag>${container.tag.version}</tag>
