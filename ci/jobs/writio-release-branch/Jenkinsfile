@@ -137,6 +137,7 @@ pipeline {
 					sh "git checkout origin/release/${params.version}"
 					sh "git checkout origin/master"
 					sh "git merge origin/release/${params.version}"
+					sh "git push origin master"
 				}
             }
         }
