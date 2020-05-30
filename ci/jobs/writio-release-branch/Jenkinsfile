@@ -122,7 +122,9 @@ pipeline {
             steps {
                 script {
 					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-						echo "echo "creating remote git tag ${params.version}..."						
+						
+						echo "creating remote git tag ${params.version}..."						
+						
 						sh "git tag -m \"${message}\" \"${params.version}\""
 						sh "git push origin \"${params.version}\""
 					}
