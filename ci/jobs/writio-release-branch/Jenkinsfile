@@ -16,6 +16,9 @@ pipeline {
     agent any
     stages {
         stage('parameterization') {
+			when {
+				expression { true }
+			}
             steps {
                 script {
 				
@@ -32,32 +35,33 @@ pipeline {
             }
         }
         stage('preparation') {
+			when {
+				expression { true }
+			}
             steps {
                 script {
-                    
-					echo "setting name and email..."
-                    sh "git config --global user.name \"${params.name}\""
-                    sh "git config --global user.email ${params.email}"
-					
-					withCredentials([usernameColonPassword(credentialsId: "${params.credentials}", variable: 'GITHUB_CREDENTIALS')]) {
-						wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: java.net.URLEncoder.encode("${GITHUB_CREDENTIALS}", "UTF-8"), var: 'GITHUB_CREDENTIALS_ENC']]]) {
-							repositoryUrl = "https://${GITHUB_CREDENTIALS}@github.com/cbehrenberg/writio.git"
-						}
+					withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+						echo "setting up git..."
+						sh "git config --global credential.helper cache"
+						sh "git config --global user.email \"${params.email}\""
+						sh "git config --global user.name \"${USERNAME}\""
+						sh "git config --global user.password \"${PASSWORD}\""
 					}
 				}
             }
         }
         stage('build source branch') {
+			when {
+				expression { true }
+			}
             steps {
 
 				// clean
                 step([$class: 'WsCleanup'])
 
 				// clone
-				withCredentials([usernameColonPassword(credentialsId: "${params.credentials}", variable: 'GITHUB_CREDENTIALS')]) {
-					echo "cloning git source branch '${params.branch}'..."
-					git branch: "${params.branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: repositoryUrl
-				}
+				echo "cloning git source branch '${params.branch}'..."
+				git branch: "${params.branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: repositoryUrl
 
 				// build
 				echo "building source branch '${params.branch}'..."
@@ -70,42 +74,41 @@ pipeline {
             }
             steps {
                 script {
-					withCredentials([usernameColonPassword(credentialsId: "${params.credentials}", variable: 'GITHUB_CREDENTIALS')]) {
-                    
-						target_branch="release/${params.version}"
-						message="create release branch for version ${params.version}"
+				
+					target_branch="release/${params.version}"
+					message="create release branch for version ${params.version}"
 
-						echo "switching to branch ${target_branch} for release..."
-						sh "git checkout -b ${target_branch} ${params.branch}"
-						
-						echo "switching maven version ${params.version}..."
-						sh "mvn versions:set -DnewVersion=${params.version} -DgenerateBackupPoms=false"
-						
-						echo "switching latest to specific version ${version} for container yamls..."
-						sh "sed -i \"s/latest/${params.version}/g\" ./ci/.env"
-						sh "cat ./ci/.env"
+					echo "switching to branch ${target_branch} for release..."
+					sh "git checkout -b ${target_branch} ${params.branch}"
+					
+					echo "switching maven version ${params.version}..."
+					sh "mvn versions:set -DnewVersion=${params.version} -DgenerateBackupPoms=false"
+					
+					echo "switching latest to specific version ${version} for container yamls..."
+					sh "sed -i \"s/latest/${params.version}/g\" ./ci/.env"
+					sh "cat ./ci/.env"
 
-						echo "comitting changes locally..."
-						sh "git commit -a -m \"${message}\""
-						
-						echo "pushing changes to remote..."
-						
-						sh "git push origin \"${target_branch}\""
-					}
+					echo "comitting changes locally..."
+					sh "git commit -a -m \"${message}\""
+					
+					echo "pushing changes to remote..."
+					
+					sh "git push origin \"${target_branch}\""
                 }
             }
         }
         stage('build release branch') {
+			when {
+				expression { true }
+			}
             steps {
 
 				// clean
                 step([$class: 'WsCleanup'])
 
 				// clone
-				withCredentials([usernameColonPassword(credentialsId: "${params.credentials}", variable: 'GITHUB_CREDENTIALS')]) {
-					echo "cloning git release branch '${target_branch}'..."
-					git branch: "${target_branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: repositoryUrl
-				}
+				echo "cloning git release branch '${target_branch}'..."
+				git branch: "${target_branch}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: repositoryUrl
 
 				// build
 				echo "building release branch '${params.branch}'..."
