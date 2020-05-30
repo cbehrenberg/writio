@@ -128,5 +128,25 @@ pipeline {
                 }
             }
         }
+        stage('build and deploy tag') {
+			when {
+				expression { true }
+			}
+            steps {
+
+				// clean
+                step([$class: 'WsCleanup'])
+
+				// clone
+				withCredentials([usernamePassword(credentialsId: "${params.credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+					echo "cloning git tag '${params.version}'..."
+					git branch: "${params.version}", credentialsId: "${params.credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
+				}
+
+				// build
+				echo "building and deploying tag '${params.version}'..."
+                sh 'mvn clean deploy'
+            }
+        }
     }
 }
