@@ -164,7 +164,7 @@ pipeline {
         }
         stage('deleting release branch') {
             when {
-                expression { false }
+                expression { true }
             }
             steps {
                 script {
