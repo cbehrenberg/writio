@@ -22,16 +22,18 @@ pipelineJob(jobName) {
             useRepository(repositoryUrl)
         }
 
-		stringParam("version", "<version>", "writio release version")
+		stringParam("version", "", "writio release version")
 
-		stringParam("name", "", "Firstname Lastname")
-
-		stringParam("email", "", "Your email address")
-
-		credentialsParam('credentials') {
+		credentialsParam('git_credentials') {
             type('com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl')
             required()
             description('writio GitHub credentials')
+        }
+
+		credentialsParam('docker_credentials') {
+            type('com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl')
+            required()
+            description('writio DockerHub credentials')
         }
 
 		booleanParam("parameterization", false, "If checked, a dry run is performed to initialize parameters")
