@@ -33,7 +33,7 @@ pipeline {
         }
         stage('build source branch') {
 			when {
-				expression { false }
+				expression { true }
 			}
             steps {
 
@@ -53,7 +53,7 @@ pipeline {
         }
         stage('create release branch') {
             when {
-                expression { false }
+                expression { true }
             }
             steps {
                 script {
@@ -78,7 +78,7 @@ pipeline {
         }
         stage('build release branch') {
 			when {
-				expression { false }
+				expression { true }
 			}
             steps {
 				// build
@@ -88,7 +88,7 @@ pipeline {
         }
         stage('push release branch') {
             when {
-                expression { false }
+                expression { true }
             }
             steps {
                 script {
@@ -101,7 +101,7 @@ pipeline {
         }
         stage('creating tag') {
             when {
-                expression { false }
+                expression { true }
             }
             steps {
                 script {
@@ -117,7 +117,7 @@ pipeline {
         }
         stage('deploy') {
 			when {
-				expression { false }
+				expression { true }
 			}
             steps {
                 script {
