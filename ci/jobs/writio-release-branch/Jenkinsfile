@@ -134,10 +134,17 @@ pipeline {
 			}
             steps {
 				withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+
+					sh "git fetch origin"
+
 					sh "git checkout origin/release/${params.version}"
+					sh "git checkout release/${params.version}"
+
 					sh "git checkout origin/master"
-					sh "git merge origin/release/${params.version}"
-					sh "git push origin master"
+					sh "git checkout master"
+
+					sh "git merge release/${params.version}"
+					sh "git push"
 				}
             }
         }
