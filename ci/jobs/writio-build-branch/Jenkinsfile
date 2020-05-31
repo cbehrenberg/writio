@@ -1,9 +1,8 @@
-def repositoryUrl = 'https://github.com/cbehrenberg/writio.git'
-def defaultBranch = 'dev'
+def config = null
 
 pipeline {
     parameters {
-        gitParameter(branchFilter: 'origin/(.*)', defaultValue: defaultBranch, name: 'branch', type: 'PT_BRANCH', description: "writio branch to build")
+        gitParameter(branchFilter: 'origin/(.*)', defaultValue: "dev", name: 'branch', type: 'PT_BRANCH', description: "writio branch to build")
         booleanParam(name: 'parameterization', defaultValue: false, description: 'If checked, a dry run is performed to initialize parameters')
     }
     agent any
@@ -12,13 +11,24 @@ pipeline {
     }
     stages {
         stage('clean') {
+            when {
+                expression { true }
+            }
             steps {
                 step([$class: 'WsCleanup'])
             }
         }
         stage('parameterization') {
+            when {
+                expression { true }
+            }
             steps {
                 script {
+
+                    configFileProvider([configFile(fileId: "writio-config", variable: 'WRITIO_CONFIG')]) {
+                        config = readJSON file: "${env.WRITIO_CONFIG}"
+                    }
+
                     if ("${params.parameterization}" == 'true') {
                         currentBuild.result = 'aborted'
                         error('dry run completed, job parameterized')
@@ -27,12 +37,18 @@ pipeline {
             }
         }    
         stage('clone') {
+            when {
+                expression { true }
+            }
             steps {
                 echo "cloning git branch '${params.branch}'..."
-                git branch: "${params.branch}", changelog: false, poll: false, url: repositoryUrl
+                git branch: "${params.branch}", changelog: false, poll: false, url: config.repositoryUrl
             }
         }
         stage('build') {
+            when {
+                expression { true }
+            }
             steps {
                 sh 'mvn clean install'
             }

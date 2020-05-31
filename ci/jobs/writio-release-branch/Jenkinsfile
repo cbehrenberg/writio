@@ -1,9 +1,10 @@
-def defaultBranch = 'dev'
+def config = null
+
 def target_branch = ''
 
 pipeline {
     parameters {
-        gitParameter(name: 'branch', branchFilter: 'origin/(.*)', defaultValue: defaultBranch, type: 'PT_BRANCH', description: "writio branch to release from")
+        gitParameter(name: 'branch', branchFilter: 'origin/(.*)', defaultValue: "dev", type: 'PT_BRANCH', description: "writio branch to release from")
         string(name: "version", defaultValue: "", description: "writio release version")
         credentials(name: 'git_credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio GitHub credentials', required: true)
         credentials(name: 'docker_credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio DockerHub credentials', required: true)
@@ -14,12 +15,16 @@ pipeline {
     }
     agent any
     stages {
-        stage('parameterization') {
+       stage('parameterization') {
 			when {
 				expression { true }
 			}
             steps {
                 script {
+
+                    configFileProvider([configFile(fileId: "writio-config", variable: 'WRITIO_CONFIG')]) {
+                        config = readJSON file: "${env.WRITIO_CONFIG}"
+                    }
 				
                     if ("${params.parameterization}" == 'true') {
                         currentBuild.result = 'aborted'
@@ -51,13 +56,11 @@ pipeline {
 			}
             steps {
 
-				// clean
-                step([$class: 'WsCleanup'])
-
 				// clone
 				withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 					echo "cloning git source branch '${params.branch}'..."
-					git branch: "${params.branch}", credentialsId: "${params.git_credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
+                    authRepositoryUrl = config.repositoryUrl.take("https://".length()) + "${USERNAME}:${PASSWORD}@" + config.repositoryUrl.substring("https://".length())
+					git branch: "${params.branch}", credentialsId: "${params.git_credentials}", changelog: false, poll: false, url: authRepositoryUrl
 				}
 
 				// build
