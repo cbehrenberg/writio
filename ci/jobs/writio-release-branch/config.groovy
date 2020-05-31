@@ -1,6 +1,6 @@
 def repositoryUrl = 'https://github.com/cbehrenberg/writio.git'
 def jobName = 'writio-release-branch'
-def defaultBranch = 'issue-11-add_release_job_and_publish_CI_images_to_dockerhub_for_easier_reuse'
+def defaultBranch = 'dev'
 
 pipelineJob(jobName) {
 
