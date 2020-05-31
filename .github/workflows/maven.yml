@@ -25,6 +25,4 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: run maven
       uses: xlui/action-maven-cli/jdk11@master
-      id: test
-      with:
-        lifecycle: 'mvn clean package'
+      args: 'clean package'
