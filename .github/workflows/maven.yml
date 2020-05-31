@@ -15,4 +15,4 @@ jobs:
       with:
         java-version: 11
     - name: Build and test project
-      run: mvn -f github-actions-java-maven/pom.xml clean package
+      run: mvn clean package
