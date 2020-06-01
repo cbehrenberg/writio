@@ -94,7 +94,8 @@ pipeline {
         }
         stage('archive') {
             when {
-                expression { true }
+				// attach artifacts does only make sense, if we built something before
+                expression { params.do_build }
             }
             steps {
                 archiveArtifacts artifacts: 'api/target/classes/writio*.proto', fingerprint: true
