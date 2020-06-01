@@ -19,7 +19,6 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>filebrowser</module>
 		<module>jenkins</module>
 	</modules>
 	

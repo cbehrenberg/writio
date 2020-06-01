@@ -12,11 +12,11 @@ jobs:
   - file: "${REF}/jobs/writio-release-branch/config.groovy"
 unclassified:
   location:
-    url: "http://localhost:48081/"
+    url: "http://localhost:48080/"
   simple-theme-plugin:
     elements:
       - cssUrl: 
-          url: "http://localhost:48081/userContent/writio.css"
+          url: "http://localhost:48080/userContent/writio.css"
   globalConfigFiles:
     configs:
       - json:
