@@ -150,7 +150,7 @@ pipeline {
                 }
             }
         }
-        stage('merge master') {
+        stage('set master to tag') {
 			when {
 				expression { true }
 			}
@@ -159,13 +159,10 @@ pipeline {
 
 					sh "git fetch origin"
 
-					sh "git checkout origin/release/${params.version}"
-					sh "git checkout release/${params.version}"
-
 					sh "git checkout origin/master"
 					sh "git checkout master"
-					
-					sh "git merge -X theirs release/${params.version}"
+
+					sh "git reset --hard ${params.version}"
 				}
             }
         }
@@ -175,7 +172,7 @@ pipeline {
 			}
             steps {
 				withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-					sh "git push"
+					sh "git push --force origin master"
 				}
             }
         }
