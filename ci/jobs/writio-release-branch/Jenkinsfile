@@ -170,9 +170,11 @@ pipeline {
     }
 	post {
         always {
-			if (remote_branch_created == true) {
-				withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-					sh "git push origin --delete ${target_branch}"
+			script {
+				if (remote_branch_created == true) {
+					withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+						sh "git push origin --delete ${target_branch}"
+					}
 				}
 			}
         }
