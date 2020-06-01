@@ -152,8 +152,8 @@ pipeline {
 
 					sh "git checkout origin/master"
 					sh "git checkout master"
-
-					sh "git merge release/${params.version}"
+					
+					sh "git merge -X theirs release/${params.version}"
 				}
             }
         }
