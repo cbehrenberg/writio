@@ -9,6 +9,9 @@ pipeline {
         string(name: "version", defaultValue: "", description: "writio release version")
         credentials(name: 'git_credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio GitHub credentials', required: true)
         credentials(name: 'docker_credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio DockerHub credentials', required: true)
+        booleanParam(name: 'do_build', defaultValue: true, description: 'If checked, source branch and modified branch are build before proceeding')
+        booleanParam(name: 'do_deploy_tag', defaultValue: true, description: 'If checked, container images are pushed to docker.io')
+        booleanParam(name: 'do_delete_branch', defaultValue: true, description: 'If checked, release branch is deleted')
         booleanParam(name: 'parameterization', defaultValue: false, description: 'If checked, a dry run is performed to initialize parameters')
     }
     options {
@@ -61,7 +64,7 @@ pipeline {
         }
         stage('build source') {
 			when {
-				expression { true }
+				expression { params.do_build }
 			}
             steps {
 				sh "mvn clean install"
@@ -137,7 +140,7 @@ pipeline {
         }
         stage('deploy tag') {
 			when {
-				expression { true }
+				expression { params.do_deploy_tag }
 			}
             steps {
                 script {
@@ -180,7 +183,7 @@ pipeline {
 	post {
         always {
 			script {
-				if (remote_branch_created == true) {
+				if (params.do_delete_branch && remote_branch_created) {
 					withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 						sh "git push origin --delete ${target_branch}"
 					}
