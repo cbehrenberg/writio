@@ -17,3 +17,14 @@ unclassified:
     elements:
       - cssUrl: 
           url: "http://localhost:48081/userContent/writio.css"
+  globalConfigFiles:
+    configs:
+      - json:
+          id: writio-config
+          name: writio config
+          comment: writio config
+          content: |
+            {
+                "repositoryUrl": "https://github.com/cbehrenberg/writio.git",
+                "authRepositoryUrl": "https://<credential>@github.com/cbehrenberg/writio.git"
+            }

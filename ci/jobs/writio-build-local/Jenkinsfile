@@ -1,4 +1,4 @@
-def config = null
+def writio = null
 
 pipeline {
     agent any
@@ -9,7 +9,7 @@ pipeline {
         disableConcurrentBuilds()
     }
     stages {
-        stage('parameterization') {
+        stage('initialize') {
             when {
                 expression { true }
             }
@@ -17,7 +17,7 @@ pipeline {
                 script {
 
                     configFileProvider([configFile(fileId: "writio-config", variable: 'WRITIO_CONFIG')]) {
-                        config = readJSON file: "${env.WRITIO_CONFIG}"
+                        writio = readJSON file: "${env.WRITIO_CONFIG}"
                     }
 
                     if ("${params.parameterization}" == 'true') {
