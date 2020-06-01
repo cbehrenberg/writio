@@ -86,7 +86,7 @@ pipeline {
         }
         stage('build modified') {
 			when {
-				expression { true }
+				expression { params.do_build }
 			}
             steps {
                 sh "mvn clean install"
