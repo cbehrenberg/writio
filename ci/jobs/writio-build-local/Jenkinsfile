@@ -35,5 +35,14 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
+        stage('archive') {
+            when {
+                expression { true }
+            }
+            steps {
+                archiveArtifacts artifacts: 'api/target/classes/writio*.proto', fingerprint: true
+                archiveArtifacts artifacts: 'app/epub-json-file/target/epub-json-file*.jar', fingerprint: true
+            }
+        }
     }
 }

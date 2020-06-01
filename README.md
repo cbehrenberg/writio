@@ -44,7 +44,7 @@ docker-compose up -d
 
 On the first run, a number of container images will be configured and built.
 
-When the task is completed, navigate in your browser to http://localhost:48081/ to open the Jenkins Dashboard. 
+When the task is completed, navigate in your browser to http://localhost:48080/ to open the Jenkins Dashboard. 
 
 ##### Build local working copy
 

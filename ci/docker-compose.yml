@@ -30,17 +30,5 @@ services:
       - "${LOCAL_JENKINS_PORT}:8080"
       - "50000:50000"
 
-  # file manager for volumes
-  filebrowser:
-    image: writio/filebrowser:${WRITIO_VERSION}
-    container_name: "${COMPOSE_PROJECT_NAME}_filebrowser"
-    restart: unless-stopped
-    volumes:
-      - type: volume
-        source: maven_repository
-        target: /srv/maven_repository
-    ports:
-      - "${LOCAL_FILEBROWSER_PORT}:80"
- 
 volumes:
   maven_repository:
