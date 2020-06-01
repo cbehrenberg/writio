@@ -36,6 +36,12 @@ pipelineJob(jobName) {
             description('writio DockerHub credentials')
         }
 
+		booleanParam("do_build", true, "If checked, container images are pushed to docker.io")
+		
+		booleanParam("do_deploy_tag", true, "If checked, release branch is deleted")
+		
+		booleanParam("do_delete_branch", true, "If checked, a dry run is performed to initialize parameters")
+
 		booleanParam("parameterization", false, "If checked, a dry run is performed to initialize parameters")
     }
 
