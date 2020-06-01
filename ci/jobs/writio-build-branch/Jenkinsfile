@@ -1,9 +1,8 @@
-def repositoryUrl = 'https://github.com/cbehrenberg/writio.git'
-def defaultBranch = 'dev'
+def writio = null
 
 pipeline {
     parameters {
-        gitParameter(branchFilter: 'origin/(.*)', defaultValue: defaultBranch, name: 'branch', type: 'PT_BRANCH', description: "writio branch to build")
+        gitParameter(branchFilter: 'origin/(.*)', defaultValue: "dev", name: 'branch', type: 'PT_BRANCH', description: "writio branch to build")
         booleanParam(name: 'parameterization', defaultValue: false, description: 'If checked, a dry run is performed to initialize parameters')
     }
     agent any
@@ -11,28 +10,38 @@ pipeline {
         disableConcurrentBuilds()
     }
     stages {
-        stage('clean') {
-            steps {
-                step([$class: 'WsCleanup'])
+        stage('initialize') {
+            when {
+                expression { true }
             }
-        }
-        stage('parameterization') {
             steps {
                 script {
+
+                    step([$class: 'WsCleanup'])
+
+                    configFileProvider([configFile(fileId: "writio-config", variable: 'WRITIO_CONFIG')]) {
+                        writio = readJSON file: "${env.WRITIO_CONFIG}"
+                    }
+
                     if ("${params.parameterization}" == 'true') {
                         currentBuild.result = 'aborted'
                         error('dry run completed, job parameterized')
                     }
                 }
             }
-        }    
+        }
         stage('clone') {
+            when {
+                expression { true }
+            }
             steps {
-                echo "cloning git branch '${params.branch}'..."
-                git branch: "${params.branch}", changelog: false, poll: false, url: repositoryUrl
+                git branch: "${params.branch}", changelog: false, poll: false, url: writio.repositoryUrl
             }
         }
         stage('build') {
+            when {
+                expression { true }
+            }
             steps {
                 sh 'mvn clean install'
             }

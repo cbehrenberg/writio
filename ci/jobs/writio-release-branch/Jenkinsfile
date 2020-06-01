@@ -1,9 +1,11 @@
-def defaultBranch = 'dev'
-def target_branch = ''
+def writio = null
+def authRepositoryUrl = null
+def target_branch = null
+def remote_branch_created = false
 
 pipeline {
     parameters {
-        gitParameter(name: 'branch', branchFilter: 'origin/(.*)', defaultValue: defaultBranch, type: 'PT_BRANCH', description: "writio branch to release from")
+        gitParameter(name: 'branch', branchFilter: 'origin/(.*)', defaultValue: "dev", type: 'PT_BRANCH', description: "writio branch to release from")
         string(name: "version", defaultValue: "", description: "writio release version")
         credentials(name: 'git_credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio GitHub credentials', required: true)
         credentials(name: 'docker_credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio DockerHub credentials', required: true)
@@ -14,13 +16,19 @@ pipeline {
     }
     agent any
     stages {
-        stage('parameterization') {
-			when {
-				expression { true }
-			}
+        stage('initialize') {
+            when {
+                expression { true }
+            }
             steps {
                 script {
-				
+
+                    step([$class: 'WsCleanup'])
+
+                    configFileProvider([configFile(fileId: "writio-config", variable: 'WRITIO_CONFIG')]) {
+                        writio = readJSON file: "${env.WRITIO_CONFIG}"
+                    }
+
                     if ("${params.parameterization}" == 'true') {
                         currentBuild.result = 'aborted'
                         error('dry run completed, job parameterized')
@@ -28,121 +36,109 @@ pipeline {
 					
 					if (!(params.branch?.trim())) { error("Build failed because source branch is not selected!")}
 					if (!(params.version?.trim())) { error("Build failed because no release version was provided!")}
-                }
-            }
-        }
-        stage('preparation') {
-			when {
-				expression { true }
-			}
-            steps {
-                script {
+					
 					withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-						echo "setting up git..."
+
 						sh "git config --global credential.helper cache"
 						sh "git config --global user.name \"${USERNAME}\""
+						
+						authRepositoryUrl = writio.authRepositoryUrl.replace("<credential>", "${USERNAME}:${PASSWORD}")
 					}
-				}
-            }
-        }
-        stage('build source branch') {
-			when {
-				expression { true }
-			}
-            steps {
-
-				// clean
-                step([$class: 'WsCleanup'])
-
-				// clone
-				withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-					echo "cloning git source branch '${params.branch}'..."
-					git branch: "${params.branch}", credentialsId: "${params.git_credentials}", changelog: false, poll: false, url: "https://${USERNAME}:${PASSWORD}@github.com/cbehrenberg/writio.git"
-				}
-
-				// build
-				echo "building source branch '${params.branch}'..."
-                sh 'mvn clean install'
-            }
-        }
-        stage('create release branch') {
-            when {
-                expression { true }
-            }
-            steps {
-                script {
-
+					
 					target_branch="release/${params.version}"
-					message="create release branch for version ${params.version}"
-
-					echo "switching to branch ${target_branch} for release..."
-					sh "git checkout -b ${target_branch} ${params.branch}"
-					
-					echo "switching maven version ${params.version}..."
-					sh "mvn versions:set -DnewVersion=${params.version} -DgenerateBackupPoms=false"
-					
-					echo "switching latest to specific version ${version} for container yamls..."
-					sh "sed -i \"s/latest/${params.version}/g\" ./ci/.env"
-					sh "cat ./ci/.env"
-
-					echo "comitting changes locally..."
-					sh "git commit -a -m \"${message}\""					
                 }
             }
-        }
-        stage('build release branch') {
+        }   
+        stage('clone source') {
 			when {
 				expression { true }
 			}
             steps {
-				// build
-				echo "building release branch '${params.branch}'..."
-                sh 'mvn clean install'
+				withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+					git branch: "${params.branch}", credentialsId: "${params.git_credentials}", changelog: false, poll: false, url: authRepositoryUrl
+				}
             }
         }
-        stage('push release branch') {
+        stage('build source') {
+			when {
+				expression { true }
+			}
+            steps {
+				sh "mvn clean install"
+            }
+        }
+        stage('modify source') {
+            when {
+                expression { true }
+            }
+            steps {
+                script {					
+					message="create release branch for version ${params.version}"
+					sh "git checkout -b ${target_branch} ${params.branch}"
+					sh "mvn versions:set -DnewVersion=${params.version} -DgenerateBackupPoms=false"
+					sh "sed -i \"s/latest/${params.version}/g\" ./ci/.env"
+					sh "git commit -a -m \"${message}\""
+                }
+            }
+        }
+        stage('build modified') {
+			when {
+				expression { true }
+			}
+            steps {
+                sh "mvn clean install"
+            }
+        }
+        stage('push modified') {
             when {
                 expression { true }
             }
             steps {
                 script {
 					withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-						echo "pushing changes to remote..."						
-						sh "git push -f origin \"${target_branch}\""
+						sh "git push -f origin ${target_branch}"
+						remote_branch_created = true
 					}
                 }
             }
         }
-        stage('creating tag') {
+        stage('tag modified') {
             when {
                 expression { true }
             }
             steps {
                 script {
 					withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-						
-						echo "creating remote git tag ${params.version}..."						
-						
-						sh "git tag -m \"${message}\" \"${params.version}\""
-						sh "git push origin \"${params.version}\""
+						sh "git tag -m \"${message}\" ${params.version}"
 					}
                 }
             }
         }
-        stage('deploy') {
+        stage('push tag') {
+            when {
+                expression { true }
+            }
+            steps {
+                script {
+					withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+						sh "git push origin ${params.version}"
+					}
+                }
+            }
+        }
+        stage('deploy tag') {
 			when {
 				expression { true }
 			}
             steps {
                 script {
 					withCredentials([usernamePassword(credentialsId: "${params.docker_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-						echo "deploying from release branch '${params.branch}'..."
 						sh "mvn -s ./ci/jobs/writio-release-branch/settings.xml deploy -Ddocker.io.username=${USERNAME} -Ddocker.io.password=${PASSWORD}"
 					}
                 }
             }
         }
-        stage('merge to master') {
+        stage('merge master') {
 			when {
 				expression { true }
 			}
@@ -156,24 +152,29 @@ pipeline {
 
 					sh "git checkout origin/master"
 					sh "git checkout master"
-
-					sh "git merge release/${params.version}"
+					
+					sh "git merge -X theirs release/${params.version}"
+				}
+            }
+        }
+        stage('push master') {
+			when {
+				expression { true }
+			}
+            steps {
+				withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 					sh "git push"
 				}
             }
         }
-        stage('deleting release branch') {
-            when {
-                expression { true }
-            }
-            steps {
-                script {
-					withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-						echo "deleting remote release branch..."						
-						sh "git push origin --delete \"${target_branch}\""
-					}
-                }
-            }
+    }
+	post {
+        always {
+			if (remote_branch_created == true) {
+				withCredentials([usernamePassword(credentialsId: "${params.git_credentials}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+					sh "git push origin --delete ${target_branch}"
+				}
+			}
         }
     }
 }
