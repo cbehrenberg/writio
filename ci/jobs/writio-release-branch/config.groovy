@@ -26,14 +26,16 @@ pipelineJob(jobName) {
 
 		credentialsParam('git_credentials') {
             type('com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl')
-            required()
-            description('writio GitHub credentials')
+            description('writio github credential')
+			defaultValue('writio-github-credential')
+			required()
         }
 
 		credentialsParam('docker_credentials') {
             type('com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl')
-            required()
-            description('writio DockerHub credentials')
+            description('writio dockerhub credential')
+			defaultValue('writio-dockerhub-credential')
+			required()
         }
 
 		booleanParam("do_build", true, "If checked, container images are pushed to docker.io")
