@@ -1,8 +1,5 @@
 version: "3.7"
-
 services:
-
-  # jenkins ci
   jenkins:
     image: writio/jenkins:${WRITIO_VERSION}
     container_name: "${COMPOSE_PROJECT_NAME}_jenkins"
@@ -10,6 +7,10 @@ services:
     user: root
     environment:
       - "MAVEN_VOLUME=${COMPOSE_PROJECT_NAME}_maven_repository"
+      - "WRITIO_GITHUB_USER=<...>"
+      - "WRITIO_GITHUB_SECRET=<...>"
+      - "WRITIO_DOCKERHUB_USER=<...>"
+      - "WRITIO_DOCKERHUB_SECRET=<...>"
     volumes:
       - type: bind
         source: "./jenkins.yaml"
@@ -29,6 +30,5 @@ services:
     ports:
       - "${LOCAL_JENKINS_PORT}:8080"
       - "50000:50000"
-
 volumes:
   maven_repository:

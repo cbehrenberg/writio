@@ -16,3 +16,4 @@ workspace@tmp/
 workspace/
 nextBuildNumber
 .flattened-pom.xml
+/ci/*.bak

@@ -7,8 +7,8 @@ pipeline {
     parameters {
         gitParameter(name: 'branch', branchFilter: 'origin/(.*)', defaultValue: "dev", type: 'PT_BRANCH', description: "writio branch to release from")
         string(name: "version", defaultValue: "", description: "writio release version")
-        credentials(name: 'git_credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio GitHub credentials', required: true)
-        credentials(name: 'docker_credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', description: 'writio DockerHub credentials', required: true)
+        credentials(name: 'git_credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', defaultValue: 'writio-github-credential', description: 'writio github credential', required: true)
+        credentials(name: 'docker_credentials', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', defaultValue: 'writio-dockerhub-credential', description: 'writio dockerhub credential', required: true)
         booleanParam(name: 'do_build', defaultValue: true, description: 'If checked, source branch and modified branch are build before proceeding')
         booleanParam(name: 'do_deploy_tag', defaultValue: true, description: 'If checked, container images are pushed to docker.io')
         booleanParam(name: 'do_delete_branch', defaultValue: true, description: 'If checked, release branch is deleted')
