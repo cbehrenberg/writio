@@ -88,19 +88,23 @@ fi
 echo "creating a backup of original ${file} (${file_orig})..."
 cp "${file}" "${file_orig}"
 
-if [[ "${replace_jenkins_credentials}" == "true" ]]
-then
-	echo "setting jenkins credentials in ${file}..."
-	{ rm ${file} && awk '{gsub("JENKINS_USER=<...>", "JENKINS_USER=${JENKINS_USERNAME}", $0); print}' > ${file}; } < ${file}
-	{ rm ${file} && awk '{gsub("JENKINS_PASS=<...>", "JENKINS_PASS=${JENKINS_SECRET}", $0); print}' > ${file}; } < ${file}
-	
-fi
+declare -A confs
+confs=(
+    [%%WRITIO_GITHUB_USER%%]="${GITHUB_USERNAME}"
+    [%%WRITIO_GITHUB_SECRET%%]="${GITHUB_SECRET}"
+    [%%WRITIO_DOCKERHUB_USER%%]="${DOCKERHUB_USERNAME}"
+    [%%WRITIO_DOCKERHUB_SECRET%%]="${DOCKERHUB_SECRET}"
+    [%%JENKINS_USER%%]="${JENKINS_USERNAME}"
+    [%%JENKINS_PASS%%]="${JENKINS_SECRET}"
+)
 
-if [[ "${replace_github_dockerhub_credentials}" == "true" ]]
-then
-	echo "setting GitHub and DockerHub credentials in ${file}..."
-	{ rm ${file} && awk '{gsub("WRITIO_GITHUB_USER=<...>", "WRITIO_GITHUB_USER=${GITHUB_USERNAME}", $0); print}' > ${file}; } < ${file}
-	{ rm ${file} && awk '{gsub("WRITIO_GITHUB_SECRET=<...>", "WRITIO_GITHUB_SECRET=${GITHUB_SECRET}", $0); print}' > ${file}; } < ${file}
-	{ rm ${file} && awk '{gsub("WRITIO_DOCKERHUB_USER=<...>", "WRITIO_DOCKERHUB_USER=${DOCKERHUB_USERNAME}", $0); print}' > ${file}; } < ${file}
-	{ rm ${file} && awk '{gsub("WRITIO_DOCKERHUB_SECRET=<...>", "WRITIO_DOCKERHUB_SECRET=${DOCKERHUB_SECRET}", $0); print}' > ${file}; } < ${file}
-fi
+configurer() {
+    for i in "${!confs[@]}"
+    do
+        search=$i
+        replace=${confs_wp[$i]}
+        sed -i "" "s/${search}/${replace}/g" ${file}
+    done
+}
+
+configurer
