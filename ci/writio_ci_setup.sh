@@ -91,15 +91,16 @@ cp "${file}" "${file_orig}"
 if [[ "${replace_jenkins_credentials}" == "true" ]]
 then
 	echo "setting jenkins credentials in ${file}..."
-	sed -i \"s/JENKINS_USER=<...>/JENKINS_USER=${JENKINS_USERNAME}/g\" ${file}
-	sed -i \"s/JENKINS_PASS=<...>/JENKINS_PASS=${JENKINS_SECRET}/g\" ${file}
+	{ rm ${file} && awk '{gsub("JENKINS_USER=<...>", "JENKINS_USER=${JENKINS_USERNAME}", $0); print}' > ${file}; } < ${file}
+	{ rm ${file} && awk '{gsub("JENKINS_PASS=<...>", "JENKINS_PASS=${JENKINS_SECRET}", $0); print}' > ${file}; } < ${file}
+	
 fi
 
 if [[ "${replace_github_dockerhub_credentials}" == "true" ]]
 then
 	echo "setting GitHub and DockerHub credentials in ${file}..."
-	sed -i \"s/WRITIO_GITHUB_USER=<...>/JENKINS_USER=${GITHUB_USERNAME}/g\" ${file}
-	sed -i \"s/WRITIO_GITHUB_SECRET=<...>/JENKINS_USER=${GITHUB_SECRET}/g\" ${file}
-	sed -i \"s/WRITIO_DOCKERHUB_USER=<...>/JENKINS_USER=${DOCKERHUB_USERNAME}/g\" ${file}
-	sed -i \"s/WRITIO_DOCKERHUB_SECRET=<...>/JENKINS_USER=${DOCKERHUB_SECRET}/g\" ${file}
+	{ rm ${file} && awk '{gsub("WRITIO_GITHUB_USER=<...>", "WRITIO_GITHUB_USER=${GITHUB_USERNAME}", $0); print}' > ${file}; } < ${file}
+	{ rm ${file} && awk '{gsub("WRITIO_GITHUB_SECRET=<...>", "WRITIO_GITHUB_SECRET=${GITHUB_SECRET}", $0); print}' > ${file}; } < ${file}
+	{ rm ${file} && awk '{gsub("WRITIO_DOCKERHUB_USER=<...>", "WRITIO_DOCKERHUB_USER=${DOCKERHUB_USERNAME}", $0); print}' > ${file}; } < ${file}
+	{ rm ${file} && awk '{gsub("WRITIO_DOCKERHUB_SECRET=<...>", "WRITIO_DOCKERHUB_SECRET=${DOCKERHUB_SECRET}", $0); print}' > ${file}; } < ${file}
 fi

@@ -15,6 +15,11 @@
 # Create SSH tunnel for Jenkins access:
 # ssh -i /path/to/your.pem writioadmin@<ip> -L 48080:127.0.0.1:48080
 
+# utilities
+set -e
+sudo apt-get -y update
+sudo apt-get -y install mawk
+
 # docker
 
 	set +e

@@ -1,7 +1,7 @@
 FROM jenkins/jenkins:jdk11
 
 # disable jenkins authentication
-ENV JENKINS_USER="admin" JENKINS_PASS="admin" JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
 
 USER root
 
