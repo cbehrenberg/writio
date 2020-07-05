@@ -37,6 +37,9 @@ RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/ap
 	&& mv apache-maven-$MAVEN_VERSION /usr/lib/mvn \
     && mvn --version
 
+# add script to create admin user
+COPY default-user.groovy /usr/share/jenkins/ref/init.groovy.d/
+
 # copy writio jenkins theme
 COPY userContent /var/jenkins_home/userContent
 
