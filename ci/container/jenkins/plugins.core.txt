@@ -18,3 +18,5 @@ throttle-concurrents
 ws-cleanup
 workflow-aggregator
 mask-passwords
+matrix-auth
+credentials-binding

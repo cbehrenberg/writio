@@ -11,6 +11,8 @@ services:
       - "WRITIO_GITHUB_SECRET=<...>"
       - "WRITIO_DOCKERHUB_USER=<...>"
       - "WRITIO_DOCKERHUB_SECRET=<...>"
+      - "JENKINS_USER=<...>"
+      - "JENKINS_PASS=<...>"
     volumes:
       - type: bind
         source: "./jenkins.yaml"

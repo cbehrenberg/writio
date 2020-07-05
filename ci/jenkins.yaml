@@ -1,5 +1,5 @@
 jenkins:
-  systemMessage: "writio Jenkins\n\n"
+  systemMessage: "writio jenkins\n\n"
   numExecutors: 1
 tool:
   git:

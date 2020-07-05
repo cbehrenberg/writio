@@ -1,7 +1,7 @@
 FROM jenkins/jenkins:jdk11
 
 # disable jenkins authentication
-ENV JENKINS_USER="admin" JENKINS_PASS="admin" JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
 
 USER root
 
@@ -36,6 +36,9 @@ RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/ap
 	&& rm apache-maven-$MAVEN_VERSION-bin.tar.gz \
 	&& mv apache-maven-$MAVEN_VERSION /usr/lib/mvn \
     && mvn --version
+
+# add script to create admin user
+COPY default-user.groovy /usr/share/jenkins/ref/init.groovy.d/
 
 # copy writio jenkins theme
 COPY userContent /var/jenkins_home/userContent
