@@ -44,6 +44,25 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+if [[ -z ${JENKINS_USERNAME+x} ]] ||  [[ -z ${JENKINS_SECRET+x} ]]
+then
+   echo "Mandatory Jenkins credentials missing / incomplete, exiting..."
+   exit 1
+fi
+
+if [[ -z ${GITHUB_USERNAME+} ]] &&  [[ -z ${GITHUB_SECRET+x} ]] && [[ -z ${DOCKERHUB_USERNAME+x} ]] &&  [[ -z ${DOCKERHUB_SECRET+x} ]]
+then
+   echo "No GitHub/DockerHub credentials given. You will not be able to perform a release."
+else
+   if [ -n ${GITHUB_USERNAME} ] &&  [ -n ${GITHUB_SECRET} ] && [ -n ${DOCKERHUB_USERNAME} ] &&  [ -n ${DOCKERHUB_SECRET} ]
+   then
+      echo "GitHub/DockerHub credentials given. You are able to perform a release."
+   else
+      echo "GitHub/DockerHub credentials incomplete, exiting..."
+	  exit 1
+   fi 
+fi
+
 echo "JENKINS_USERNAME = ${JENKINS_USERNAME}"
 echo "JENKINS_SECRET = ${JENKINS_SECRET}"
 
