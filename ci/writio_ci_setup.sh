@@ -52,7 +52,7 @@ then
    echo "Mandatory Jenkins credentials missing / incomplete, exiting..."
    exit 1
 else
-   if ! [[ [[ grep -q "JENKINS_USER=<...>" "${file}" ]] && [[ grep -q "JENKINS_PASS=<...>" "${file}" ]] ]]
+   if [[ ! [[ [[ grep -q "JENKINS_USER=<...>" "${file}" ]] && [[ grep -q "JENKINS_PASS=<...>" "${file}" ]] ]] ]]
    then
       echo "${file} misses Jenkins credential placeholders, exiting..."
       exit 1
