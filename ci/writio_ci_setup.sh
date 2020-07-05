@@ -88,23 +88,17 @@ fi
 echo "creating a backup of original ${file} (${file_orig})..."
 cp "${file}" "${file_orig}"
 
-declare -A confs
-confs=(
-    [%%WRITIO_GITHUB_USER%%]="${GITHUB_USERNAME}"
-    [%%WRITIO_GITHUB_SECRET%%]="${GITHUB_SECRET}"
-    [%%WRITIO_DOCKERHUB_USER%%]="${DOCKERHUB_USERNAME}"
-    [%%WRITIO_DOCKERHUB_SECRET%%]="${DOCKERHUB_SECRET}"
-    [%%JENKINS_USER%%]="${JENKINS_USERNAME}"
-    [%%JENKINS_PASS%%]="${JENKINS_SECRET}"
-)
-
-configurer() {
-    for i in "${!confs[@]}"
-    do
-        search=$i
-        replace=${confs_wp[$i]}
-        sed -i "" "s/${search}/${replace}/g" ${file}
-    done
+# $1 : search
+# $2 : replace
+# $3 : file
+configure () {
+	ESCAPED_REPLACE=$(printf '%s\n' "$2" | sed -e 's/[\/&]/\\&/g')
+	sed "s/$2/$ESCAPED_REPLACE/g"
+	sed -i -e "s/$1/$ESCAPED_REPLACE/g" $3
 }
 
-configurer
+if [[ "${replace_jenkins_credentials}" == "true" ]]
+then
+	configure "%%JENKINS_USER%%" "${JENKINS_USERNAME}" ${file}
+	configure "%%JENKINS_PASS%%" "${JENKINS_SECRET}" ${file}
+fi
