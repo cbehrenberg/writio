@@ -52,12 +52,12 @@ done
 
 if [[ -z ${JENKINS_USERNAME+x} ]] || [[ -z ${JENKINS_SECRET+x} ]]
 then
-	echo "Mandatory Jenkins credentials missing / incomplete, exiting..."
+	echo "mandatory jenkins credentials missing / incomplete, exiting..."
 	exit 1
 else
 	if ! grep -q "JENKINS_USER=%%JENKINS_USER%%" "${file}" || ! grep -q "JENKINS_PASS=%%JENKINS_PASS%%" "${file}"
 	then
-		echo "${file} misses Jenkins credential placeholders, exiting..."
+		echo "${file} misses jenkins credential placeholders, exiting..."
 		exit 1
 	else
 		replace_jenkins_credentials="true"
@@ -66,20 +66,20 @@ fi
 
 if [[ -z ${GITHUB_USERNAME+x} ]] && [[ -z ${GITHUB_SECRET+x} ]] && [[ -z ${DOCKERHUB_USERNAME+x} ]] && [[ -z ${DOCKERHUB_SECRET+x} ]]
 then
-	echo "No GitHub and DockerHub credentials given, hence you cannot perform a release!"
+	echo "no github and dockerhub credentials given, hence you cannot perform a release!"
 else
 	if [[ -z ${GITHUB_USERNAME+x} ]] || [[ -z ${GITHUB_SECRET+x} ]] || [[ -z ${DOCKERHUB_USERNAME+x} ]] || [[ -z ${DOCKERHUB_SECRET+x} ]]
 	then
-		echo "GitHub or DockerHub credentials are incomplete, exiting..."
+		echo "github or dockerhub credentials are incomplete, exiting..."
 		exit 1
 	else
 		if ! grep -q "WRITIO_GITHUB_USER=%%WRITIO_GITHUB_USER%%" "${file}" || ! grep -q "WRITIO_GITHUB_SECRET=%%WRITIO_GITHUB_SECRET%%" "${file}" \
 			|| ! grep -q "WRITIO_DOCKERHUB_USER=%%WRITIO_DOCKERHUB_USER%%" "${file}" || ! grep -q "WRITIO_DOCKERHUB_SECRET=%%WRITIO_DOCKERHUB_SECRET%%" "${file}"
 		then
-			echo "${file} misses GitHub or DockerHub credential placeholders, exiting..."
+			echo "${file} misses github or dockerhub credential placeholders, exiting..."
 			exit 1
 		else
-			echo "GitHub and DockerHub credentials given, hence you can perform a release."
+			echo "github and dockerhub credentials given, hence you can perform a release."
 			replace_github_dockerhub_credentials="true"
 		fi
 	fi
