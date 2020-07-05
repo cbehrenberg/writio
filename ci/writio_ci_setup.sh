@@ -1,10 +1,18 @@
 #!/bin/bash
 
-# --jenkins-username, --jenkins-secret : Jenkins credentials
-# --github-username, --github-secret : GitHub credentials
-# --dockerhub-username, --dockerhub-secret : DockerHub credentials
+# you can set the credentials in docker-compose.yml by hand or use this script
 
-# ./writio_ci_setup.sh --jenkins-username=ju --jenkins-secret=js --github-username=gu --github-secret=gs --dockerhub-username=du --dockerhub-secret=ds
+# notes:
+# - jenkins credentials are mandatory
+# - github/dockerhub credentials are optional - needed if you want to release
+
+# arguments:
+#  --jenkins-username, --jenkins-secret : Jenkins credentials
+#  --github-username, --github-secret : GitHub credentials
+#  --dockerhub-username, --dockerhub-secret : DockerHub credentials
+
+# example:
+# bash writio_ci_setup.sh --jenkins-username=admin --jenkins-secret=<...> --github-username=cbehrenberg --github-secret=<...> --dockerhub-username=writio --dockerhub-secret=<...>
 
 file="docker-compose.yml"
 file_orig="${file}.orig"
@@ -39,7 +47,7 @@ while [ $# -gt 0 ]; do
 			DOCKERHUB_SECRET="${1#*=}"
 			;;
 		--help|-h)
-			printf "Meaningful help message" # Flag argument
+			echo "Meaningful help message"
 			exit 0
 			;;
 		*)
@@ -121,3 +129,5 @@ then
 	configure "WRITIO_DOCKERHUB_USER=<...>" "WRITIO_DOCKERHUB_USER=${DOCKERHUB_USERNAME}" ${file}
 	configure "WRITIO_DOCKERHUB_SECRET=<...>" "WRITIO_DOCKERHUB_SECRET=${DOCKERHUB_SECRET}" ${file}
 fi
+
+echo "${file} configured, ready to execute: docker-compose up -d"
