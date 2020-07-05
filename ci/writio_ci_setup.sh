@@ -55,7 +55,7 @@ then
 	echo "Mandatory Jenkins credentials missing / incomplete, exiting..."
 	exit 1
 else
-	if ! grep -q "JENKINS_USER=<...>" "${file}" || ! grep -q "JENKINS_PASS=<...>" "${file}"
+	if ! grep -q "JENKINS_USER=%%JENKINS_USER%%" "${file}" || ! grep -q "JENKINS_PASS=%%JENKINS_PASS%%" "${file}"
 	then
 		echo "${file} misses Jenkins credential placeholders, exiting..."
 		exit 1
@@ -73,8 +73,8 @@ else
 		echo "GitHub or DockerHub credentials are incomplete, exiting..."
 		exit 1
 	else
-		if ! grep -q "WRITIO_GITHUB_USER=<...>" "${file}" || ! grep -q "WRITIO_GITHUB_SECRET=<...>" "${file}" \
-			|| ! grep -q "WRITIO_DOCKERHUB_USER=<...>" "${file}" || ! grep -q "WRITIO_DOCKERHUB_SECRET=<...>" "${file}"
+		if ! grep -q "WRITIO_GITHUB_USER=%%WRITIO_GITHUB_USER%%" "${file}" || ! grep -q "WRITIO_GITHUB_SECRET=%%WRITIO_GITHUB_SECRET%%" "${file}" \
+			|| ! grep -q "WRITIO_DOCKERHUB_USER=%%WRITIO_DOCKERHUB_USER%%" "${file}" || ! grep -q "WRITIO_DOCKERHUB_SECRET=%%WRITIO_DOCKERHUB_SECRET%%" "${file}"
 		then
 			echo "${file} misses GitHub or DockerHub credential placeholders, exiting..."
 			exit 1
