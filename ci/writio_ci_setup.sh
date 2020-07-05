@@ -13,8 +13,8 @@
 
 # example:
 # bash writio_ci_setup.sh --jenkins-username=writioadmin --jenkins-secret=<...> \
-                          --github-username=cbehrenberg --github-secret=<...> \
-						  --dockerhub-username=writio --dockerhub-secret=<...>
+#                          --github-username=cbehrenberg --github-secret=<...> \
+#						  --dockerhub-username=writio --dockerhub-secret=<...>
 
 file="docker-compose.yml"
 file_orig="${file}.orig"
