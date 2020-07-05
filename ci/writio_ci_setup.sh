@@ -4,6 +4,8 @@
 # --github-username, --github-secret : GitHub credentials
 # --dockerhub-username, --dockerhub-secret : DockerHub credentials
 
+# ./writio_ci_setup.sh --jenkins-username=ju --jenkins-secret=js --github-username=gu --github-secret=gs --dockerhub-username=du --dockerhub-secret=ds
+
 while [ $# -gt 0 ]; do
   case "$1" in
     --jenkins-username*)
