@@ -7,12 +7,12 @@ services:
     user: root
     environment:
       - "MAVEN_VOLUME=${COMPOSE_PROJECT_NAME}_maven_repository"
-      - "WRITIO_GITHUB_USER=%%WRITIO_GITHUB_USER%%"
-      - "WRITIO_GITHUB_SECRET=%%WRITIO_GITHUB_SECRET%%"
-      - "WRITIO_DOCKERHUB_USER=%%WRITIO_DOCKERHUB_USER%%"
-      - "WRITIO_DOCKERHUB_SECRET=%%WRITIO_DOCKERHUB_SECRET%%"
-      - "JENKINS_USER=%%JENKINS_USER%%"
-      - "JENKINS_PASS=%%JENKINS_PASS%%"
+      - "WRITIO_GITHUB_USER=<...>"
+      - "WRITIO_GITHUB_SECRET=<...>"
+      - "WRITIO_DOCKERHUB_USER=<...>"
+      - "WRITIO_DOCKERHUB_SECRET=<...>"
+      - "JENKINS_USER=<...>"
+      - "JENKINS_PASS=<...>"
     volumes:
       - type: bind
         source: "./jenkins.yaml"

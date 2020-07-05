@@ -55,7 +55,7 @@ then
 	echo "mandatory jenkins credentials missing / incomplete, exiting..."
 	exit 1
 else
-	if ! grep -q "JENKINS_USER=%%JENKINS_USER%%" "${file}" || ! grep -q "JENKINS_PASS=%%JENKINS_PASS%%" "${file}"
+	if ! grep -q "JENKINS_USER=<...>" "${file}" || ! grep -q "JENKINS_PASS=<...>" "${file}"
 	then
 		echo "${file} misses jenkins credential placeholders, exiting..."
 		exit 1
@@ -73,8 +73,8 @@ else
 		echo "github or dockerhub credentials are incomplete, exiting..."
 		exit 1
 	else
-		if ! grep -q "WRITIO_GITHUB_USER=%%WRITIO_GITHUB_USER%%" "${file}" || ! grep -q "WRITIO_GITHUB_SECRET=%%WRITIO_GITHUB_SECRET%%" "${file}" \
-			|| ! grep -q "WRITIO_DOCKERHUB_USER=%%WRITIO_DOCKERHUB_USER%%" "${file}" || ! grep -q "WRITIO_DOCKERHUB_SECRET=%%WRITIO_DOCKERHUB_SECRET%%" "${file}"
+		if ! grep -q "WRITIO_GITHUB_USER=<...>" "${file}" || ! grep -q "WRITIO_GITHUB_SECRET=<...>" "${file}" \
+			|| ! grep -q "WRITIO_DOCKERHUB_USER=<...>" "${file}" || ! grep -q "WRITIO_DOCKERHUB_SECRET=<...>" "${file}"
 		then
 			echo "${file} misses github or dockerhub credential placeholders, exiting..."
 			exit 1
@@ -93,12 +93,11 @@ cp "${file}" "${file_orig}"
 # $3 : file
 configure () {
 	ESCAPED_REPLACE=$(printf '%s\n' "$2" | sed -e 's/[\/&]/\\&/g')
-	sed "s/$2/$ESCAPED_REPLACE/g"
 	sed -i -e "s/$1/$ESCAPED_REPLACE/g" $3
 }
 
 if [[ "${replace_jenkins_credentials}" == "true" ]]
 then
-	configure "%%JENKINS_USER%%" "${JENKINS_USERNAME}" ${file}
-	configure "%%JENKINS_PASS%%" "${JENKINS_SECRET}" ${file}
+	configure "JENKINS_USER=<...>" "JENKINS_USER=${JENKINS_USERNAME}" ${file}
+	configure "JENKINS_PASS=<...>" "JENKINS_PASS=${JENKINS_SECRET}" ${file}
 fi
