@@ -6,6 +6,9 @@
 
 # ./writio_ci_setup.sh --jenkins-username=ju --jenkins-secret=js --github-username=gu --github-secret=gs --dockerhub-username=du --dockerhub-secret=ds
 
+file="docker-compose.yml"
+file_orig="${file}.orig"
+
 while [ $# -gt 0 ]; do
   case "$1" in
     --jenkins-username*)
@@ -44,30 +47,37 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-if [[ -z ${JENKINS_USERNAME+x} ]] ||  [[ -z ${JENKINS_SECRET+x} ]]
+if [[ -z ${JENKINS_USERNAME+x} ]] || [[ -z ${JENKINS_SECRET+x} ]]
 then
    echo "Mandatory Jenkins credentials missing / incomplete, exiting..."
    exit 1
-fi
-
-if [[ -z ${GITHUB_USERNAME+} ]] &&  [[ -z ${GITHUB_SECRET+x} ]] && [[ -z ${DOCKERHUB_USERNAME+x} ]] &&  [[ -z ${DOCKERHUB_SECRET+x} ]]
-then
-   echo "No GitHub/DockerHub credentials given. You will not be able to perform a release."
 else
-   if [ -n ${GITHUB_USERNAME} ] &&  [ -n ${GITHUB_SECRET} ] && [ -n ${DOCKERHUB_USERNAME} ] &&  [ -n ${DOCKERHUB_SECRET} ]
+   if ! [[ [[ grep -q "JENKINS_USER=<...>" "${file}" ]] && [[ grep -q "JENKINS_PASS=<...>" "${file}" ]] ]]
    then
-      echo "GitHub/DockerHub credentials given. You are able to perform a release."
-   else
-      echo "GitHub/DockerHub credentials incomplete, exiting..."
-	  exit 1
-   fi 
+      echo "${file} misses Jenkins credential placeholders, exiting..."
+      exit 1
+   fi
 fi
 
-echo "JENKINS_USERNAME = ${JENKINS_USERNAME}"
-echo "JENKINS_SECRET = ${JENKINS_SECRET}"
+if [[ -z ${GITHUB_USERNAME+x} ]] && [[ -z ${GITHUB_SECRET+x} ]] && [[ -z ${DOCKERHUB_USERNAME+x} ]] && [[ -z ${DOCKERHUB_SECRET+x} ]]
+then
+	echo "No GitHub and DockerHub credentials given, hence you cannot perform a release!"
+else
+	if [[ -z ${GITHUB_USERNAME+x} ]] || [[ -z ${GITHUB_SECRET+x} ]] || [[ -z ${DOCKERHUB_USERNAME+x} ]] || [[ -z ${DOCKERHUB_SECRET+x} ]]
+	then
+		echo "GitHub or DockerHub credentials are incomplete, exiting..."
+		exit 1
+	else
+	
+       if ! [[ [[ grep -q "WRITIO_GITHUB_USER=<...>" "${file}" ]] && [[ grep -q "WRITIO_GITHUB_SECRET=<...>" "${file}" ]] && [[ grep -q "WRITIO_DOCKERHUB_USER=<...>" "${file}" ]] && [[ grep -q "WRITIO_DOCKERHUB_SECRET=<...>" "${file}" ]] ]]
+       then
+          echo "${file} misses GitHub or DockerHub credential placeholders, exiting..."
+          exit 1
+	   else
+		  echo "GitHub and DockerHub credentials given, hence you can perform a release."
+       fi
+	fi
+fi
 
-echo "GITHUB_USERNAME = ${GITHUB_USERNAME}"
-echo "GITHUB_SECRET = ${GITHUB_SECRET}"
-
-echo "DOCKERHUB_USERNAME = ${DOCKERHUB_USERNAME}"
-echo "DOCKERHUB_SECRET = ${DOCKERHUB_SECRET}"
+echo "creating a backup of original ${file} (${file_orig})..."
+cp "${file}" "${file_orig}"
