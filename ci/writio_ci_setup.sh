@@ -52,12 +52,12 @@ done
 
 if [[ -z ${JENKINS_USERNAME+x} ]] || [[ -z ${JENKINS_SECRET+x} ]]
 then
-	echo "mandatory jenkins credentials missing / incomplete, exiting..."
+	echo "ERROR: mandatory jenkins credentials missing / incomplete, exiting..."
 	exit 1
 else
 	if ! grep -q "JENKINS_USER=<...>" "${file}" || ! grep -q "JENKINS_PASS=<...>" "${file}"
 	then
-		echo "${file} misses jenkins credential placeholders, exiting..."
+		echo "ERROR: ${file} misses jenkins credential placeholders, exiting..."
 		exit 1
 	else
 		replace_jenkins_credentials="true"
@@ -66,26 +66,26 @@ fi
 
 if [[ -z ${GITHUB_USERNAME+x} ]] && [[ -z ${GITHUB_SECRET+x} ]] && [[ -z ${DOCKERHUB_USERNAME+x} ]] && [[ -z ${DOCKERHUB_SECRET+x} ]]
 then
-	echo "no github and dockerhub credentials given, hence you cannot perform a release!"
+	echo "WARNING: no github and dockerhub credentials given, hence you cannot perform a release!"
 else
 	if [[ -z ${GITHUB_USERNAME+x} ]] || [[ -z ${GITHUB_SECRET+x} ]] || [[ -z ${DOCKERHUB_USERNAME+x} ]] || [[ -z ${DOCKERHUB_SECRET+x} ]]
 	then
-		echo "github or dockerhub credentials are incomplete, exiting..."
+		echo "ERROR: github or dockerhub credentials are incomplete, exiting..."
 		exit 1
 	else
 		if ! grep -q "WRITIO_GITHUB_USER=<...>" "${file}" || ! grep -q "WRITIO_GITHUB_SECRET=<...>" "${file}" \
 			|| ! grep -q "WRITIO_DOCKERHUB_USER=<...>" "${file}" || ! grep -q "WRITIO_DOCKERHUB_SECRET=<...>" "${file}"
 		then
-			echo "${file} misses github or dockerhub credential placeholders, exiting..."
+			echo "ERROR: ${file} misses github or dockerhub credential placeholders, exiting..."
 			exit 1
 		else
-			echo "github and dockerhub credentials given, hence you can perform a release."
+			echo "INFO: github and dockerhub credentials given, hence you can perform a release."
 			replace_github_dockerhub_credentials="true"
 		fi
 	fi
 fi
 
-echo "creating a backup of original ${file} (${file_orig})..."
+echo "INFO: creating a backup of original ${file} (${file_orig})..."
 cp "${file}" "${file_orig}"
 
 # $1 : search
@@ -98,6 +98,16 @@ configure () {
 
 if [[ "${replace_jenkins_credentials}" == "true" ]]
 then
+	echo "INFO: replacing jenkins credentials in ${file}..."
 	configure "JENKINS_USER=<...>" "JENKINS_USER=${JENKINS_USERNAME}" ${file}
 	configure "JENKINS_PASS=<...>" "JENKINS_PASS=${JENKINS_SECRET}" ${file}
+fi
+
+if [[ "${replace_github_dockerhub_credentials}" == "true" ]]
+then
+	echo "INFO: replacing github and dockerhub credentials in ${file}..."
+	configure "WRITIO_GITHUB_USER=<...>" "JENKINS_USER=${GITHUB_USERNAME}" ${file}
+	configure "WRITIO_GITHUB_SECRET=<...>" "JENKINS_PASS=${GITHUB_SECRET}" ${file}
+	configure "WRITIO_DOCKERHUB_USER=<...>" "JENKINS_USER=${DOCKERHUB_USERNAME}" ${file}
+	configure "WRITIO_DOCKERHUB_SECRET=<...>" "JENKINS_PASS=${DOCKERHUB_SECRET}" ${file}
 fi
