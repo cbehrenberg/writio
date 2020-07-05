@@ -106,8 +106,8 @@ fi
 if [[ "${replace_github_dockerhub_credentials}" == "true" ]]
 then
 	echo "INFO: replacing github and dockerhub credentials in ${file}..."
-	configure "WRITIO_GITHUB_USER=<...>" "JENKINS_USER=${GITHUB_USERNAME}" ${file}
-	configure "WRITIO_GITHUB_SECRET=<...>" "JENKINS_PASS=${GITHUB_SECRET}" ${file}
-	configure "WRITIO_DOCKERHUB_USER=<...>" "JENKINS_USER=${DOCKERHUB_USERNAME}" ${file}
-	configure "WRITIO_DOCKERHUB_SECRET=<...>" "JENKINS_PASS=${DOCKERHUB_SECRET}" ${file}
+	configure "WRITIO_GITHUB_USER=<...>" "WRITIO_GITHUB_USER=${GITHUB_USERNAME}" ${file}
+	configure "WRITIO_GITHUB_SECRET=<...>" "WRITIO_GITHUB_SECRET=${GITHUB_SECRET}" ${file}
+	configure "WRITIO_DOCKERHUB_USER=<...>" "WRITIO_DOCKERHUB_USER=${DOCKERHUB_USERNAME}" ${file}
+	configure "WRITIO_DOCKERHUB_SECRET=<...>" "WRITIO_DOCKERHUB_SECRET=${DOCKERHUB_SECRET}" ${file}
 fi
