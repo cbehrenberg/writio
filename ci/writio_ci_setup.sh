@@ -50,14 +50,19 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
+file_test="${file}"
+if test -f "${file_orig}"; then
+	file_test="${file_orig}"
+fi
+
 if [[ -z ${JENKINS_USERNAME+x} ]] || [[ -z ${JENKINS_SECRET+x} ]]
 then
 	echo "ERROR: mandatory jenkins credentials missing / incomplete, exiting..."
 	exit 1
 else
-	if ! grep -q "JENKINS_USER=<...>" "${file}" || ! grep -q "JENKINS_PASS=<...>" "${file}"
+	if ! grep -q "JENKINS_USER=<...>" "${file_test}" || ! grep -q "JENKINS_PASS=<...>" "${file_test}"
 	then
-		echo "ERROR: ${file} misses jenkins credential placeholders, exiting..."
+		echo "ERROR: ${file_test} misses jenkins credential placeholders, exiting..."
 		exit 1
 	else
 		replace_jenkins_credentials="true"
@@ -73,10 +78,10 @@ else
 		echo "ERROR: github or dockerhub credentials are incomplete, exiting..."
 		exit 1
 	else
-		if ! grep -q "WRITIO_GITHUB_USER=<...>" "${file}" || ! grep -q "WRITIO_GITHUB_SECRET=<...>" "${file}" \
-			|| ! grep -q "WRITIO_DOCKERHUB_USER=<...>" "${file}" || ! grep -q "WRITIO_DOCKERHUB_SECRET=<...>" "${file}"
+		if ! grep -q "WRITIO_GITHUB_USER=<...>" "${file_test}" || ! grep -q "WRITIO_GITHUB_SECRET=<...>" "${file_test}" \
+			|| ! grep -q "WRITIO_DOCKERHUB_USER=<...>" "${file_test}" || ! grep -q "WRITIO_DOCKERHUB_SECRET=<...>" "${file_test}"
 		then
-			echo "ERROR: ${file} misses github or dockerhub credential placeholders, exiting..."
+			echo "ERROR: ${file_test} misses github or dockerhub credential placeholders, exiting..."
 			exit 1
 		else
 			echo "INFO: github and dockerhub credentials given, hence you can perform a release."
@@ -85,8 +90,13 @@ else
 	fi
 fi
 
-echo "INFO: creating a backup of original ${file} (${file_orig})..."
-cp "${file}" "${file_orig}"
+if test -f "$file_orig"; then
+	echo "INFO: resetting ${file} to contents of ${file_orig} for proper replacement (previous backup)..."
+	cp "${file_orig}" "${file}"
+else
+	echo "INFO: creating a backup of original ${file} (${file_orig})..."
+	cp "${file}" "${file_orig}"
+fi
 
 # $1 : search
 # $2 : replace
