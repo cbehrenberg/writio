@@ -7,6 +7,7 @@ services:
     user: root
     environment:
       - "MAVEN_VOLUME=writio_ci_maven_repository"
+      - "SECRETS=/run"
     secrets:
        - writio-ci-jenkins-username
        - writio-ci-jenkins-secret

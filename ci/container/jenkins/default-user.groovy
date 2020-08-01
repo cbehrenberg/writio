@@ -1,8 +1,6 @@
 import jenkins.model.*
 import hudson.security.*
 
-def env = System.getenv()
-
 def jenkins = Jenkins.getInstance()
 if(!(jenkins.getSecurityRealm() instanceof HudsonPrivateSecurityRealm))
     jenkins.setSecurityRealm(new HudsonPrivateSecurityRealm(false))
@@ -10,8 +8,11 @@ if(!(jenkins.getSecurityRealm() instanceof HudsonPrivateSecurityRealm))
 if(!(jenkins.getAuthorizationStrategy() instanceof GlobalMatrixAuthorizationStrategy))
     jenkins.setAuthorizationStrategy(new GlobalMatrixAuthorizationStrategy())
 
-def user = jenkins.getSecurityRealm().createAccount(env.JENKINS_USER, env.JENKINS_PASS)
-user.save()
-jenkins.getAuthorizationStrategy().add(Jenkins.ADMINISTER, env.JENKINS_USER)
+String jenkins_username = new File('/run/secrets/writio-ci-jenkins-username').text
+String jenkins_secret = new File('/run/secrets/writio-ci-jenkins-secret').text
 
+def user = jenkins.getSecurityRealm().createAccount(jenkins_username, jenkins_secret)
+user.save()
+
+jenkins.getAuthorizationStrategy().add(Jenkins.ADMINISTER, jenkins_username)
 jenkins.save()
