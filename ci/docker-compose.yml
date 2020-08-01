@@ -1,18 +1,19 @@
 version: "3.7"
 services:
   jenkins:
-    image: writio/jenkins:${WRITIO_VERSION}
-    container_name: "${COMPOSE_PROJECT_NAME}_jenkins"
+    image: writio/jenkins:latest
+    container_name: "writio_ci_jenkins"
     restart: unless-stopped
     user: root
     environment:
-      - "MAVEN_VOLUME=${COMPOSE_PROJECT_NAME}_maven_repository"
-      - "WRITIO_GITHUB_USER=<...>"
-      - "WRITIO_GITHUB_SECRET=<...>"
-      - "WRITIO_DOCKERHUB_USER=<...>"
-      - "WRITIO_DOCKERHUB_SECRET=<...>"
-      - "JENKINS_USER=<...>"
-      - "JENKINS_PASS=<...>"
+      - "MAVEN_VOLUME=writio_ci_maven_repository"
+    secrets:
+       - writio-ci-jenkins-username
+       - writio-ci-jenkins-secret
+       - writio-ci-github-username
+       - writio-ci-github-secret
+       - writio-ci-dockerhub-username
+       - writio-ci-dockerhub-secret
     volumes:
       - type: bind
         source: "./jenkins.yaml"
@@ -21,7 +22,7 @@ services:
         source: "./jobs"
         target: "/usr/share/jenkins/ref/jobs"
       - type: bind
-        source: "${LOCAL_CONTAINER_ENGINE_SOCKET}"
+        source: "/var/run/docker.sock"
         target: "/var/run/docker.sock"
       - type: bind
         source: "./.."
@@ -30,7 +31,20 @@ services:
         source: maven_repository
         target: /root/.m2/repository
     ports:
-      - "${LOCAL_JENKINS_PORT}:8080"
+      - "48080:8080"
       - "50000:50000"
 volumes:
   maven_repository:
+secrets:
+   writio-ci-jenkins-username:
+     external: true 
+   writio-ci-jenkins-secret:
+     external: true 
+   writio-ci-github-username:
+     external: true 
+   writio-ci-github-secret:
+     external: true 
+   writio-ci-dockerhub-username:
+     external: true 
+   writio-ci-dockerhub-secret:
+     external: true
