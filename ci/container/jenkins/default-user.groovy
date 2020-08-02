@@ -7,12 +7,12 @@ if(!(jenkins.getSecurityRealm() instanceof HudsonPrivateSecurityRealm))
 
 if(!(jenkins.getAuthorizationStrategy() instanceof GlobalMatrixAuthorizationStrategy))
     jenkins.setAuthorizationStrategy(new GlobalMatrixAuthorizationStrategy())
+	
+def adminUsername = new File("/run/secrets/writio-ci-jenkins-username").text.trim()
+def adminSecret = new File("/run/secrets/writio-ci-jenkins-secret").text.trim()
 
-String jenkins_username = new File('/run/secrets/writio-ci-jenkins-username').text
-String jenkins_secret = new File('/run/secrets/writio-ci-jenkins-secret').text
-
-def user = jenkins.getSecurityRealm().createAccount(jenkins_username, jenkins_secret)
+def user = jenkins.getSecurityRealm().createAccount(adminUsername, adminSecret)
 user.save()
 
-jenkins.getAuthorizationStrategy().add(Jenkins.ADMINISTER, jenkins_username)
+jenkins.getAuthorizationStrategy().add(Jenkins.ADMINISTER, adminUsername)
 jenkins.save()

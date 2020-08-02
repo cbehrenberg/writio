@@ -2,8 +2,6 @@ version: "3.7"
 services:
   jenkins:
     image: writio/jenkins:latest
-    container_name: "writio_ci_jenkins"
-    restart: unless-stopped
     user: root
     environment:
       - "MAVEN_VOLUME=writio_ci_maven_repository"
