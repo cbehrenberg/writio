@@ -17,14 +17,14 @@ credentials:
           - usernamePassword:
               scope: GLOBAL
               id: "writio-github-credential"
-              username: ${WRITIO_GITHUB_USER}
-              password: ${WRITIO_GITHUB_SECRET}
+              username: "${secrets/writio-ci-github-username}"
+              password: "${secrets/writio-ci-github-secret}"
               description: "writio github credential"
           - usernamePassword:
               scope: GLOBAL
               id: "writio-dockerhub-credential"
-              username: ${WRITIO_DOCKERHUB_USER}
-              password: ${WRITIO_DOCKERHUB_SECRET}
+              username: "${secrets/writio-ci-dockerhub-username}"
+              password: "${secrets/writio-ci-dockerhub-secret}"
               description: "writio dockerhub credential"
 unclassified:
   location:

@@ -1,135 +1,96 @@
 #!/bin/bash
 
-# you can set the credentials in docker-compose.yml by hand or use this script
+ask() {
 
-# notes:
-# - jenkins credentials are mandatory
-# - github/dockerhub credentials are optional - needed if you want to release
+    local prompt default reply
 
-# arguments:
-#  --jenkins-username, --jenkins-secret : Jenkins credentials
-#  --github-username, --github-secret : GitHub credentials
-#  --dockerhub-username, --dockerhub-secret : DockerHub credentials
+    if [ "${2:-}" = "Y" ]; then
+        prompt="Y/n"
+        default=Y
+    elif [ "${2:-}" = "N" ]; then
+        prompt="y/N"
+        default=N
+    else
+        prompt="y/n"
+        default=
+    fi
 
-# example:
-# bash writio_ci_setup.sh --jenkins-username=writioadmin --jenkins-secret=<...> \
-#                          --github-username=cbehrenberg --github-secret=<...> \
-#						  --dockerhub-username=writio --dockerhub-secret=<...>
+    while true; do
 
-file="docker-compose.yml"
-file_orig="${file}.orig"
+        echo -n "$1 [$prompt] "
 
-replace_jenkins_credentials="false"
-replace_github_dockerhub_credentials="false"
+        read reply </dev/tty
 
-while [ $# -gt 0 ]; do
-	case "$1" in
-		--jenkins-username*)
-			if [[ "$1" != *=* ]]; then shift; fi
-			JENKINS_USERNAME="${1#*=}"
-			;;
-		--jenkins-secret*)
-			if [[ "$1" != *=* ]]; then shift; fi
-			JENKINS_SECRET="${1#*=}"
-			;;
-		--github-username*)
-			if [[ "$1" != *=* ]]; then shift; fi
-			GITHUB_USERNAME="${1#*=}"
-			;;
-		--github-secret*)
-			if [[ "$1" != *=* ]]; then shift; fi
-			GITHUB_SECRET="${1#*=}"
-			;;
-		--dockerhub-username*)
-			if [[ "$1" != *=* ]]; then shift; fi
-			DOCKERHUB_USERNAME="${1#*=}"
-			;;
-		--dockerhub-secret*)
-			if [[ "$1" != *=* ]]; then shift; fi
-			DOCKERHUB_SECRET="${1#*=}"
-			;;
-		--help|-h)
-			echo "Meaningful help message"
-			exit 0
-			;;
-		*)
-			>&2 printf "Error: Invalid argument\n"
-			exit 1
-			;;
-	esac
-	shift
-done
+        if [ -z "$reply" ]; then
+            reply=$default
+        fi
 
-file_test="${file}"
-if test -f "${file_orig}"; then
-	file_test="${file_orig}"
-fi
-
-if [[ -z ${JENKINS_USERNAME+x} ]] || [[ -z ${JENKINS_SECRET+x} ]]
-then
-	echo "ERROR: mandatory jenkins credentials missing / incomplete, exiting..."
-	exit 1
-else
-	if ! grep -q "JENKINS_USER=<...>" "${file_test}" || ! grep -q "JENKINS_PASS=<...>" "${file_test}"
-	then
-		echo "ERROR: ${file_test} misses jenkins credential placeholders, exiting..."
-		exit 1
-	else
-		replace_jenkins_credentials="true"
-	fi
-fi
-
-if [[ -z ${GITHUB_USERNAME+x} ]] && [[ -z ${GITHUB_SECRET+x} ]] && [[ -z ${DOCKERHUB_USERNAME+x} ]] && [[ -z ${DOCKERHUB_SECRET+x} ]]
-then
-	echo "WARNING: no github and dockerhub credentials given, hence you cannot perform a release!"
-else
-	if [[ -z ${GITHUB_USERNAME+x} ]] || [[ -z ${GITHUB_SECRET+x} ]] || [[ -z ${DOCKERHUB_USERNAME+x} ]] || [[ -z ${DOCKERHUB_SECRET+x} ]]
-	then
-		echo "ERROR: github or dockerhub credentials are incomplete, exiting..."
-		exit 1
-	else
-		if ! grep -q "WRITIO_GITHUB_USER=<...>" "${file_test}" || ! grep -q "WRITIO_GITHUB_SECRET=<...>" "${file_test}" \
-			|| ! grep -q "WRITIO_DOCKERHUB_USER=<...>" "${file_test}" || ! grep -q "WRITIO_DOCKERHUB_SECRET=<...>" "${file_test}"
-		then
-			echo "ERROR: ${file_test} misses github or dockerhub credential placeholders, exiting..."
-			exit 1
-		else
-			echo "INFO: github and dockerhub credentials given, hence you can perform a release."
-			replace_github_dockerhub_credentials="true"
-		fi
-	fi
-fi
-
-if test -f "$file_orig"; then
-	echo "INFO: resetting ${file} to contents of ${file_orig} for proper replacement (previous backup)..."
-	cp "${file_orig}" "${file}"
-else
-	echo "INFO: creating a backup of original ${file} (${file_orig})..."
-	cp "${file}" "${file_orig}"
-fi
-
-# $1 : search
-# $2 : replace
-# $3 : file
-configure () {
-	ESCAPED_REPLACE=$(printf '%s\n' "$2" | sed -e 's/[\/&]/\\&/g')
-	sed -i -e "s/$1/$ESCAPED_REPLACE/g" $3
+        case "$reply" in
+            Y*|y*) return 0 ;;
+            N*|n*) return 1 ;;
+        esac
+    done
 }
 
-if [[ "${replace_jenkins_credentials}" == "true" ]]
-then
-	echo "INFO: replacing jenkins credentials in ${file}..."
-	configure "JENKINS_USER=<...>" "JENKINS_USER=${JENKINS_USERNAME}" ${file}
-	configure "JENKINS_PASS=<...>" "JENKINS_PASS=${JENKINS_SECRET}" ${file}
+echo "Asserting Docker being in swarm mode..."
+docker swarm init
+
+echo "Creating secrets..."
+
+# Jenkins admin username and password
+
+	jenkins_user_def="writioadmin"
+	read -p "Enter username for Jenkins [${jenkins_user_def}]: " jenkins_user
+	jenkins_user=${jenkins_user:-${jenkins_user_def}}
+	echo "jenkins_user = ${jenkins_user}"
+	
+	while [[ -z "$jenkins_secret" ]]
+	do
+		read -p "Enter secret for Jenkins user ${jenkins_user}: " jenkins_secret
+	done
+	
+	echo "${jenkins_user}" | docker secret create writio-ci-jenkins-username -
+	echo "${jenkins_secret}" | docker secret create writio-ci-jenkins-secret -
+
+if ask "Do you want to perform a release to GitHub and Docker Hub?"; then
+
+	# GitHub username and password
+
+		while [[ -z "$github_user" ]]
+		do
+			read -p "Enter GitHub user: " github_user
+		done
+		
+		while [[ -z "$github_secret" ]]
+		do
+			read -p "Enter secret for GitHub user ${github_user}: " github_secret
+		done
+		
+		echo "${github_user}" | docker secret create writio-ci-github-username -
+		echo "${github_secret}" | docker secret create writio-ci-github-secret -
+		
+	# Docker Hub username and password
+
+		while [[ -z "$dockerhub_user" ]]
+		do
+			read -p "Enter Docker Hub user: " dockerhub_user
+		done
+		
+		while [[ -z "$dockerhub_secret" ]]
+		do
+			read -p "Enter secret for Docker Hub user ${dockerhub_user}: " dockerhub_secret
+		done
+		
+		echo "${dockerhub_user}" | docker secret create writio-ci-dockerhub-username -
+		echo "${dockerhub_secret}" | docker secret create writio-ci-dockerhub-secret -
+	
+else
+    echo "Skipping creation of GitHub and DockerHub credentials (populated with dummy value)..."
+	echo "UNDEFINED" | docker secret create writio-ci-github-username -
+	echo "UNDEFINED" | docker secret create writio-ci-github-secret -
+	echo "UNDEFINED" | docker secret create writio-ci-dockerhub-username -
+	echo "UNDEFINED" | docker secret create writio-ci-dockerhub-secret -
 fi
 
-if [[ "${replace_github_dockerhub_credentials}" == "true" ]]
-then
-	echo "INFO: replacing github and dockerhub credentials in ${file}..."
-	configure "WRITIO_GITHUB_USER=<...>" "WRITIO_GITHUB_USER=${GITHUB_USERNAME}" ${file}
-	configure "WRITIO_GITHUB_SECRET=<...>" "WRITIO_GITHUB_SECRET=${GITHUB_SECRET}" ${file}
-	configure "WRITIO_DOCKERHUB_USER=<...>" "WRITIO_DOCKERHUB_USER=${DOCKERHUB_USERNAME}" ${file}
-	configure "WRITIO_DOCKERHUB_SECRET=<...>" "WRITIO_DOCKERHUB_SECRET=${DOCKERHUB_SECRET}" ${file}
-fi
-
-echo "${file} configured, ready to execute: docker-compose up -d"
+echo "done"
+exit 0

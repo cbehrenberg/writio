@@ -1,5 +1,7 @@
 @echo off
 
+rem Example: open_ssh_tunnel.cmd XXX.westeurope.cloudapp.azure.com C:\XXX\key.pem
+
 rem %1 = ip
 rem %2 = pem file
 
