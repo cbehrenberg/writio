@@ -74,39 +74,21 @@ The setup scripts installs all prerequisites to make builds with Jenkins, but al
 mvn clean install
 ```
 
-To setup the CI stack, switch to the /ci directory of the cloned repo and execute the script `writio_ci_setup.sh` with following arguments. Please note that the Jenkins credentials are mandatory, the GitHub/DockerHub credentials are optional - but must be both present, if you want to use the release job:
+To setup the CI stack, switch to the /ci directory of the cloned repo and execute the script `writio_ci_setup.sh` . It will ask you for credentials and securely store them as docker secrets. Please note that the Jenkins admin credentials are mandatory, while the GitHub/DockerHub credentials are optional.
 
-- `--jenkins-username`, `--jenkins-secret` : Jenkins credentials (mandatory). Used to log into Jenkins Dashboard.
-- `--github-username`, `--github-secret` : GitHub credentials (optional). Necessary for the release job to create a GitHub tag.
-- `--dockerhub-username`, `--dockerhub-secret` : DockerHub credentials (optional). Necessary for the release job to push the built container images to DockerHub.
+Start the CI stack with the script `writio_ci_start.sh` - you can later attach to the Jenkins StdOut if you like (which you can later safely exit with Ctrl+C). When you reboot the machine, it will survive.
 
-Example:
-
-```
-bash writio_ci_setup.sh --jenkins-username=writioadmin --jenkins-secret=... \
-                        --github-username=cbehrenberg --github-secret=... \
-						--dockerhub-username=writio --dockerhub-secret=...
-```
-
-> If you do not like to use the script `writio_ci_setup.sh`, you can also manually edit the file docker-compose.yml accordingly.
-
-Start the CI stack as follows in the /ci directory:
-
-```
-docker-compose up -d
-```
-
-> To stop it at a later time, use `docker-compose down`
+> To stop it at a later time, use `writio_ci_stop.sh` accordingly.
 
 If you are deploying on Azure, create now a SSH tunnel with forwarding of port 48080 (not necessary for local deployments). For Windows, a helper script `open_ssh_tunnel.cmd` is located in */env*. Create a new terminal window (`cmd.exe`) and execute the script with the IP of your VM and the path to the pem file, for example:
 
 ```
-open_ssh_tunnel.cmd <ip> C:\Users\Christian\Documents\writio_key.pem
+open_ssh_tunnel.cmd <address> C:\path\to\key.pem
 ```
 
 > As long as terminal window is open, you can access Jenkins through port 48080. If you close, you can't do it.
 
-Open a browser and navigate to the following URL to open Jenkins. Use the Jenkins credentials you entered above: http://localhost:48080/login
+Open a browser and navigate to the following URL to open Jenkins. Use the Jenkins admin credentials you entered above: http://localhost:48080/login
 
 #### How to build a local working copy with Jenkins
 
