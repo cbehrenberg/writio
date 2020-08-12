@@ -6,7 +6,7 @@
 
 	<groupId>com.cbehrenberg.writio</groupId>
 	<artifactId>writio</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>0.0.6</version>
 
 	<packaging>pom</packaging>
 

@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   jenkins:
-    image: writio/jenkins:latest
+    image: writio/jenkins:0.0.6
     user: root
     environment:
       - "MAVEN_VOLUME=writio_ci_maven_repository"
