@@ -49,6 +49,6 @@ COPY plugins.ci.txt /usr/share/jenkins/ref/plugins.ci.txt
 RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.ci.txt
 
 # add script to create admin user
-COPY default-user.groovy /usr/share/jenkins/ref/init.groovy.d/
+COPY admin-user.groovy /usr/share/jenkins/ref/init.groovy.d/
 
 USER jenkins

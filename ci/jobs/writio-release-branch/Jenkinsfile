@@ -79,7 +79,7 @@ pipeline {
 					message="create release branch for version ${params.version}"
 					sh "git checkout -b ${target_branch} ${params.branch}"
 					sh "mvn versions:set -DnewVersion=${params.version} -DgenerateBackupPoms=false"
-					sh "sed -i \"s/latest/${params.version}/g\" ./ci/writio_ci.yml"  
+					sh "sed -i \"s/latest/${params.version}/g\" ./ci/writio_ci.yaml"  
 					sh "git commit -a -m \"${message}\""
                 }
             }
