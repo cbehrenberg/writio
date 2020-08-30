@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "xyz.writio.api.gateway.v1.reader";
+option java_outer_classname = "ApiGatewayReaderSvc";
+
+service Reader {
+	rpc GetHeader (GetHeaderRequest) returns (GetHeaderResponse);
+	rpc GetToc (GetTocRequest) returns (GetTocResponse);
+	rpc GetTextFragmentCount (GetTextFragmentCountRequest) returns (GetTextFragmentCountResponse);
+	rpc StreamTextFragment (stream StreamTextFragmentRequest) returns (stream StreamTextFragmentResponse);
+}
+
+message GetHeaderRequest {
+	string contextId = 1;
+	string bookId = 2;
+}
+
+message GetHeaderResponse {
+	string title = 1;
+	string author = 2;
+	bytes cover = 3;
+}
+
+message GetTocRequest {
+	string contextId = 1;
+	string bookId = 2;
+}
+
+message GetTocResponse {
+	repeated GetTocResponseItem items = 1;
+}
+
+message GetTocResponseItem {
+	string name = 1;
+	uint64 offset = 2;
+}
+
+message GetTextFragmentCountRequest {
+	string contextId = 1;
+}
+
+message GetTextFragmentCountResponse {
+	uint64 count = 1;
+}
+
+message StreamTextFragmentRequest {
+	string contextId = 1;
+	uint64 offset = 2;
+}
+
+message StreamTextFragmentResponse {
+	string fragment = 1;
+}

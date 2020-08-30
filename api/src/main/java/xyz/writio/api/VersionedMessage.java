@@ -1,4 +1,4 @@
-package com.cbehrenberg.writio.api;
+package xyz.writio.api;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;

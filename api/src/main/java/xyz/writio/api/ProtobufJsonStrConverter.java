@@ -1,4 +1,4 @@
-package com.cbehrenberg.writio.api;
+package xyz.writio.api;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

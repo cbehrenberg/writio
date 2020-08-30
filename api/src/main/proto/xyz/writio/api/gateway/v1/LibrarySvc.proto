@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "xyz.writio.api.gateway.v1.library";
+option java_outer_classname = "ApiGatewayLibrarySvc";
+
+service Library {
+	rpc GetBookCount (GetBookCountRequest) returns (GetBookCountResponse);
+	rpc GetBooks (GetBooksRequest) returns (GetBooksResponse);
+	rpc DeleteBooks (DeleteBooksRequest) returns (DeleteBooksResponse);
+	rpc DownloadBooks (DownloadBooksRequest) returns (DownloadBooksResponse);
+}
+
+message GetBookCountRequest {
+	string contextId = 1;
+}
+
+message GetBookCountResponse {
+	uint64 count = 1;
+}
+
+message GetBooksRequest {
+	string contextId = 1;
+}
+
+message GetBooksResponse {
+	repeated GetBooksResponseItem items = 1;
+}
+
+message GetBooksResponseItem {
+	string id = 1;
+	string title = 2;
+	string author = 3;
+	bytes cover = 4;
+	bool processing = 5;
+}
+
+message DeleteBooksRequest {
+	string contextId = 1;
+	repeated string ids = 2;
+}
+
+message DeleteBooksResponse {
+	repeated string deletedIds = 1;
+}
+
+message DownloadBooksRequest {
+	string contextId = 1;
+	repeated string ids = 2;
+}
+
+message DownloadBooksResponse {
+	string format = 1;
+	string filename = 2;
+	bytes file = 3;
+}
