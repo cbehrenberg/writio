@@ -7,7 +7,7 @@
 
 	<parent>
 		<artifactId>writio</artifactId>
-		<groupId>com.cbehrenberg.writio</groupId>
+		<groupId>xyz.writio</groupId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
@@ -34,7 +34,7 @@
 
 		<dependency>
 			<artifactId>writio-api</artifactId>
-			<groupId>com.cbehrenberg.writio</groupId>
+			<groupId>xyz.writio</groupId>
 		</dependency>
 
 		<!-- protobuf + java utils -->

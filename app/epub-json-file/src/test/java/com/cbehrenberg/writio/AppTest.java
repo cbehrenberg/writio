@@ -1,4 +1,4 @@
-package com.cbehrenberg.writio;
+package xyz.writio;
 
 import static org.junit.Assert.assertTrue;
 

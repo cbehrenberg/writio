@@ -4,7 +4,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.cbehrenberg.writio</groupId>
+	<groupId>xyz.writio</groupId>
 	<artifactId>writio</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
@@ -49,7 +49,7 @@
 			<!-- writio api -->
 			<dependency>
 				<artifactId>writio-api</artifactId>
-				<groupId>com.cbehrenberg.writio</groupId>
+				<groupId>xyz.writio</groupId>
 				<version>${project.version}</version>
 			</dependency>
 

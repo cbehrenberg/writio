@@ -1,4 +1,4 @@
-package com.cbehrenberg.writio;
+package xyz.writio;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,11 +24,11 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cbehrenberg.writio.api.VersionedMessage;
-import com.cbehrenberg.writio.api.v1.Book;
-import com.cbehrenberg.writio.api.v1.Chapter;
-import com.cbehrenberg.writio.api.v1.Page;
-import com.cbehrenberg.writio.api.v1.Section;
+import xyz.writio.api.VersionedMessage;
+import xyz.writio.api.v1.Book;
+import xyz.writio.api.v1.Chapter;
+import xyz.writio.api.v1.Page;
+import xyz.writio.api.v1.Section;
 
 import nl.siegmann.epublib.domain.MediaType;
 import nl.siegmann.epublib.domain.Metadata;
